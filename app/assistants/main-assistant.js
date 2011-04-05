@@ -1,4 +1,4 @@
-a/*
+/*
  *    MainAssistant - Mode Launcher's Default Configuration Scene
  */
 

@@ -40,9 +40,9 @@ StartupAssistant.prototype.setup = function() {
 	if(this.appAssistant.isNewOrFirstStart == 0)
 		this.controller.get('title').innerHTML = $L('Changelog');
 	else if(this.appAssistant.isNewOrFirstStart == 1) 
-		this.controller.get('title').innerHTML = $L("Welcome To WebOS Tweaks");
+		this.controller.get('title').innerHTML = $L("Welcome To Tweaks");
 	else if(this.appAssistant.isNewOrFirstStart == 2) 
-		this.controller.get('title').innerHTML = $L("WebOS Tweaks Changelog");
+		this.controller.get('title').innerHTML = $L("Tweaks Changelog");
 	
 	var html = '';
 

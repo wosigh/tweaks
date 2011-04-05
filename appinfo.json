@@ -4,7 +4,7 @@
 	"type": "web",
 	"main": "index.html",
 	"icon": "icon.png",
-	"version": "0.0.1",
+	"version": "0.0.4",
 	"vendor": "www.webosinternals.org",
 	"removable": "true",
 	"noWindow": "true"
