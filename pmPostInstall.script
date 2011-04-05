@@ -19,6 +19,12 @@ rm -f /var/palm/ls2/roles/prv/${NSRVID}.json /var/palm/ls2/roles/pub/${NSRVID}.j
 # Stop the service if running
 /usr/bin/killall -9 ${NSRVID} || true
 
+# Remove service directory
+rm -rf ${NSRVDIR}
+
+# Install service directory
+cp -a ${APPDIR}/node-service ${NSRVDIR}
+
 # Install the dbus service
 mkdir -p /var/palm/system-services
 cp ${NSRVDIR}/${NSRVID}.service /var/palm/ls2/services/prv/${NSRVID}.service

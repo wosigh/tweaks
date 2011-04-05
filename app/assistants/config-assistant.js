@@ -105,6 +105,11 @@ ConfigAssistant.prototype.handleCommand = function(event) {
 					this.controller.serviceRequest("palm://org.webosinternals.lunactl", {method: "control", 
 						parameters: {action: "restart"}});
 				}
+				else if(value == "cancel") {
+					this.modelCommandMenu.visible = false;
+		
+					this.controller.modelChanged(this.modelCommandMenu, this);
+				}
 			}.bind(this)});
 	}
 }
