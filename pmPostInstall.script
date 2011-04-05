@@ -1,0 +1,33 @@
+#!/bin/sh
+
+APPID=org.webosinternals.tweaks
+NSRVID=org.webosinternals.tweaks
+
+APPS=/media/cryptofs/apps
+
+[ -d ${APPS} ] || { echo "Requires webOS 1.3.5 or later" ; exit 1 ; }
+
+APPDIR=${APPS}/usr/palm/applications/${APPID}
+NSRVDIR=${APPS}/usr/palm/services/${NSRVID}
+
+# Remove the dbus service
+rm -f /var/palm/ls2/services/prv/${NSRVID}.service /var/palm/ls2/services/pub/${NSRVID}.service
+
+# Remove the ls2 roles
+rm -f /var/palm/ls2/roles/prv/${NSRVID}.json /var/palm/ls2/roles/pub/${NSRVID}.json
+
+# Stop the service if running
+/usr/bin/killall -9 ${NSRVID} || true
+
+# Install the dbus service
+mkdir -p /var/palm/system-services
+cp ${NSRVDIR}/${NSRVID}.service /var/palm/ls2/services/prv/${NSRVID}.service
+cp ${NSRVDIR}/${NSRVID}.service /var/palm/ls2/services/pub/${NSRVID}.service
+
+# Install the ls2 roles
+mkdir -p /var/palm/ls2/roles/prv /var/palm/ls2/roles/pub
+cp ${NSRVDIR}/${NSRVID}.json /var/palm/ls2/roles/prv/${NSRVID}.json
+cp ${NSRVDIR}/${NSRVID}.json /var/palm/ls2/roles/pub/${NSRVID}.json
+/usr/bin/ls-control scan-services || true
+
+exit 0
