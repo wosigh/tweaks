@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.webosinternals.tweaks
-Exec=/usr/bin/run-js-service -n /media/cryptofs/apps/usr/palm/services/org.webosinternals.tweaks

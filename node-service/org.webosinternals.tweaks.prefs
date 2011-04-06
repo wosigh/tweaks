@@ -1,0 +1,13 @@
+[
+  {
+      "type": "db.kind",
+      "object": "org.webosinternals.tweaks:1",
+      "caller": "org.webosinternals.tweaks",
+      "operations": {
+          "create": "allow",
+          "read": "allow",
+          "update": "allow",
+          "delete": "allow"
+      }
+  }
+]

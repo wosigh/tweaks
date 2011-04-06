@@ -2,11 +2,11 @@
 	"role": {
 		"exeName":"js",
 		"type": "privileged",
-		"allowedNames": ["org.webosinternals.tweaks"]
+		"allowedNames": ["org.webosinternals.tweaks.prefs"]
 	},
 	"permissions": [
 		{
-			"service":"org.webosinternals.tweaks",
+			"service":"org.webosinternals.tweaks.prefs",
 			"inbound":["*"],
 			"outbound":["*"]
 		}

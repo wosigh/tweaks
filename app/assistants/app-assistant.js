@@ -22,7 +22,7 @@ AppAssistant.prototype.handleLaunch = function(params) {
 	this.isNewOrFirstStart = this.checkVersion();
 	
 	if(this.isNewOrFirstStart == 1) {
-		var setupRequest = new Mojo.Service.Request("palm://org.webosinternals.tweaks", {
+		var setupRequest = new Mojo.Service.Request("palm://org.webosinternals.tweaks.prefs", {
 			method: 'setup', parameters: {}, 
 			onComplete: function(params, response) {
 				if((response) && (response.returnValue)) {
