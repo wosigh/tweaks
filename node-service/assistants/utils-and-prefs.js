@@ -45,16 +45,6 @@ var prefs = (function() {
 
 //
 
-	var initPrefs = function() {
-		var future = DB.putKind(DB_KIND, "org.webosinternals.tweaks", []);
-		
-		future.then(this, function(future) {
-			future.result = { returnValue: true };
-		});
-			
-		return future;
-	};
-
 	var loadPrefs = function() {
 		var future = DB.find({ from: DB_KIND, limit: 2 });
 
@@ -113,7 +103,6 @@ var prefs = (function() {
 // Public functions...
 
 	that.init = function() {
-		return initPrefs();
 	};
 
 	that.load = function() {

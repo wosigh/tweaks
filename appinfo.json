@@ -1,11 +1,14 @@
 {
-	"id": "org.webosinternals.tweaks",
 	"title": "Tweaks",
+	"id": "org.webosinternals.tweaks",
+	"version": "0.0.5",
+	"release_date":	"6-Apr-2011",
+	"vendor": "WebOS Internals",
+	"vendor_email":	"support@webos-internals.org",
+	"vendor_url": "http://www.webos-internals.org/wiki/Application:Tweaks",
 	"type": "web",
 	"main": "index.html",
 	"icon": "icon.png",
-	"version": "0.0.5",
-	"vendor": "www.webosinternals.org",
 	"removable": "true",
 	"noWindow": "true"
 }
