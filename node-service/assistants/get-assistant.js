@@ -12,7 +12,9 @@ GetCommandAssistant.prototype.run = function(future) {
 	future.then(this, function(future) {
 		var config = future.result;
 
-		if((!this.controller.args.key) && (!this.controller.args.keys))
+		if(!this.controller.args.owner)
+			future.result = { returnValue: false };	
+		else if((!this.controller.args.key) && (!this.controller.args.keys))
 			future.result = { returnValue: false };	
 		else {
 			var keys = [];
@@ -28,8 +30,11 @@ GetCommandAssistant.prototype.run = function(future) {
 				for(var category in config) {
 					for(var group in config[category]) {
 						for(var j = 0; j < config[category][group].length; j++) {
-							if(config[category][group][j].key == keys[i])
+							if((config[category][group][j].owner == this.controller.args.owner) &&
+								(config[category][group][j].key == keys[i]))
+							{
 								result[keys[i]] = config[category][group][j].value;
+							}
 						}
 					}
 				}

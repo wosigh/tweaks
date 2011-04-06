@@ -48,42 +48,52 @@ AddCommandAssistant.prototype.run = function(future) {
 						if(this.controller.args.prefs[i].value != undefined) {
 							var value = this.controller.args.prefs[i].value;
 
-							// TODO: handle updating of the data or not?
+							// Data is not deleted on delete so lets fetch the old value and use it
 
-							if(utils.findArray(config[this.controller.args.category][group], "key", key) == -1) {
-								if(this.controller.args.prefs[i].type == "integer-picker") {
-									var minValue = 0;
-									var maxValue = 100;
-							
-									if(this.controller.args.prefs[i].min)
-										minValue = this.controller.args.prefs[i].min;
-							
-									if(this.controller.args.prefs[i].max)
-										maxValue = this.controller.args.prefs[i].max;
+							for(var j = 0; j < config[this.controller.args.category][group].length; j++) {
+								if((config[this.controller.args.category][group][j].owner == owner) &&
+									(config[this.controller.args.category][group][j].key == key))
+								{
+									value = config[this.controller.args.category][group][j].value;
+								
+									config[this.controller.args.category][group].splice(j--, 1);
+									
+									break;
+								}
+							}
+
+							if(this.controller.args.prefs[i].type == "integer-picker") {
+								var minValue = 0;
+								var maxValue = 100;
+						
+								if(this.controller.args.prefs[i].min)
+									minValue = this.controller.args.prefs[i].min;
+						
+								if(this.controller.args.prefs[i].max)
+									maxValue = this.controller.args.prefs[i].max;
+
+								config[this.controller.args.category][group].push({
+									owner: owner, type: "integer-picker", 
+									key: key, restart: restart,
+									label: label, value: value,
+									min: minValue, max: maxValue});
+							}
+							else if(this.controller.args.prefs[i].type == "list-selector") {
+								if(this.controller.args.prefs[i].choices) {
+									var choices = this.controller.args.prefs[i].choices;
 
 									config[this.controller.args.category][group].push({
-										owner: owner, type: "integer-picker", 
+										owner: owner, type: "list-selector", 
 										key: key, restart: restart,
 										label: label, value: value,
-										min: minValue, max: maxValue});
+										choices: choices});
 								}
-								else if(this.controller.args.prefs[i].type == "list-selector") {
-									if(this.controller.args.prefs[i].choices) {
-										var choices = this.controller.args.prefs[i].choices;
-
-										config[this.controller.args.category][group].push({
-											owner: owner, type: "list-selector", 
-											key: key, restart: restart,
-											label: label, value: value,
-											choices: choices});
-									}
-								}
-								else if(this.controller.args.prefs[i].type == "toggle-button") {
-									config[this.controller.args.category][group].push({
-										owner: owner, type: "toggle-button", 
-										key: key, restart: restart,
-										label: label, value: value});
-								}
+							}
+							else if(this.controller.args.prefs[i].type == "toggle-button") {
+								config[this.controller.args.category][group].push({
+									owner: owner, type: "toggle-button", 
+									key: key, restart: restart,
+									label: label, value: value});
 							}
 						}
 					}

@@ -102,8 +102,12 @@ ConfigAssistant.prototype.handleCommand = function(event) {
 			allowHTMLMessage: true,
 			onChoose: function(value) {
 				if(value == "restart") {
-					this.controller.serviceRequest("palm://org.webosinternals.lunactl", {method: "control", 
-						parameters: {action: "restart"}});
+					this.modelCommandMenu.visible = false;
+		
+					this.controller.modelChanged(this.modelCommandMenu, this);
+
+					this.controller.serviceRequest("palm://org.webosinternals.ipkgservice", {
+						method: "restartLuna", parameters: {}});
 				}
 				else if(value == "cancel") {
 					this.modelCommandMenu.visible = false;

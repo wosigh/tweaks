@@ -70,6 +70,9 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 			prefs.push({group: group, elements: ""});
 		
 			for(var i = 0; i < this.config[category][group].length; i++) {
+				if(this.config[category][group][i].deleted != undefined)
+					continue;
+			
 				if((i == 0) && (this.config[category][group].length == 1))
 					prefs[prefs.length - 1].elements += "<div class='palm-row single'>";
 				else if(i == 0)
@@ -115,6 +118,9 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 					prefs[prefs.length - 1]["valueIntegerPicker" + id] = this.config[category][group][i].value;
 				}
 			}
+			
+			if(prefs[prefs.length - 1].elements == "")
+				prefs.pop();
 		}
 	}
 
@@ -139,6 +145,8 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 
 		this.categories.clear();
 
+		var totalCount = 0;
+
 		for(var i = 0; i < categories.length; i++) {
 			var count = 0;
 			var category = categories[i];
@@ -146,17 +154,32 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 			if(this.config[category] != undefined) {
 				for(var group in this.config[category]) {
 					for(var j = 0; j < this.config[category][group].length; j++) {
-						if((this.config[category][group][j].type == "toggle-button") ||
+						if((this.config[category][group][j].deleted == undefined) && 
+							((this.config[category][group][j].type == "toggle-button") ||
 							(this.config[category][group][j].type == "list-selector") ||
-							(this.config[category][group][j].type == "integer-picker"))
+							(this.config[category][group][j].type == "integer-picker")))
 						{
 							count++;
+							totalCount++;
 						}
 					}
 				}
 			}
 
 			this.categories.push({name: category, count: count});
+		}
+		
+		if(totalCount == 0) {
+			this.controller.showAlertDialog({
+				title: $L("No tweaks available"),
+				message: "<div style='text-align:justify;'>There are no tweaks available. " +
+					"If you have installed Tweaks app after installing patches that use " +
+					"Tweaks then you need to reinstall those patches.</div>",
+				choices:[
+					{label:$L("Ok"), value:"ok", type:'default'}],
+				preventCancel: false,
+				allowHTMLMessage: true
+			});
 		}
 		
 		this.controller.modelChanged(this.modelCategoriesList, this);
@@ -177,8 +200,12 @@ MainAssistant.prototype.handleCommand = function(event) {
 			allowHTMLMessage: true,
 			onChoose: function(value) {
 				if(value == "restart") {
-					this.controller.serviceRequest("palm://org.webosinternals.lunactl", {method: "control", 
-						parameters: {action: "restart"}});
+					this.modelCommandMenu.visible = false;
+		
+					this.controller.modelChanged(this.modelCommandMenu, this);
+
+					this.controller.serviceRequest("palm://org.webosinternals.ipkgservice", {
+						method: "restartLuna", parameters: {}});
 				}
 				else if(value == "cancel") {
 					this.modelCommandMenu.visible = false;

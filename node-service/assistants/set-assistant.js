@@ -12,24 +12,31 @@ SetCommandAssistant.prototype.run = function(future) {
 	future.then(this, function(future) {
 		var config = future.result;
 
-		var result = { returnValue: true };
+		if(!this.controller.args.owner)
+			future.result = { returnValue: false };	
+		else {
+			var result = { returnValue: true };
 
-		for(var key in this.controller.args) {
-			for(var category in config) {
-				for(var group in config[category]) {
-					for(var j = 0; j < config[category][group].length; j++) {
-						if(config[category][group][j].key == key)
-							config[category][group][j].value = this.controller.args[key];
+			for(var key in this.controller.args) {
+				for(var category in config) {
+					for(var group in config[category]) {
+						for(var j = 0; j < config[category][group].length; j++) {
+							if((config[category][group][j].owner == this.controller.args.owner) &&
+								(config[category][group][j].key == key))
+							{
+								config[category][group][j].value = this.controller.args[key];
+							}
+						}
 					}
 				}
 			}
-		}
 		
-		future.nest(prefs.save(config));
+			future.nest(prefs.save(config));
 
-		future.then(this, function(future) {
-			future.result = { returnValue: true };
-		});
+			future.then(this, function(future) {
+				future.result = { returnValue: true };
+			});
+		}
 	});
 }
 

@@ -12,14 +12,19 @@ DelCommandAssistant.prototype.run = function(future) {
 	future.then(this, function(future) {
 		var config = future.result;
 
+		var now = new Date();
+
 		if(!this.controller.args.owner)
 			future.result = { returnValue: false };	
 		else {
 			for(var category in config) {
 				for(var group in config[category]) {
 					for(var i = 0; i < config[category][group].length; i++) {
-						if(config[category][group][i].owner == this.controller.args.owner)
-							config[category][group].splice(i--, 1);
+						if(config[category][group][i].owner == this.controller.args.owner) {
+							// Only mark data as deleted so if user installs patch back
+
+							config[category][group][i].deleted = now.getTime();
+						}
 					}
 					
 					if(config[category][group].length == 0) {
