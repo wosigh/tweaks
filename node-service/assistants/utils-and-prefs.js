@@ -120,7 +120,7 @@ var prefs = (function() {
 		var future = loadPrefs();
 		
 		future.then(this, function(future) {
-			console.log("WebOS Tweaks preferences loaded");
+			console.log("Tweaks preferences loaded");
 
 			var result = future.result;
 
@@ -139,7 +139,7 @@ var prefs = (function() {
 			future.nest(savePrefs(prefs));
 			
 			future.then(this, function(future) {
-				console.log("WebOS Tweaks preferences saved");
+				console.log("Tweaks preferences saved");
 
 //				notifySubscribers(prefs);
 
