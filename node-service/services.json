@@ -9,11 +9,6 @@
 		"description": "Background service for Tweaks App",
 		"commands": [ 
 			{ 
-				"name": "setup", 
-				"assistant": "SetupCommandAssistant",
-				"public": true
-			},
-			{ 
 				"name": "add", 
 				"assistant": "AddCommandAssistant",
 				"public": true

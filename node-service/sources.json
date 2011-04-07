@@ -7,7 +7,5 @@
 	{	"source": "assistants/get-assistant.js" },
 	{	"source": "assistants/set-assistant.js" },
 
-	{	"source": "assistants/setup-assistant.js" },
-
 	{	"source": "assistants/utils-and-prefs.js" }
 ]

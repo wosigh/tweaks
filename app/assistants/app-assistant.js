@@ -21,21 +21,7 @@ AppAssistant.prototype.cleanup = function() {
 AppAssistant.prototype.handleLaunch = function(params) {
 	this.isNewOrFirstStart = this.checkVersion();
 	
-	if(this.isNewOrFirstStart == 1) {
-		var setupRequest = new Mojo.Service.Request("palm://org.webosinternals.tweaks.prefs", {
-			method: 'setup', parameters: {}, 
-			onComplete: function(params, response) {
-				if((response) && (response.returnValue)) {
-					var cookie = new Mojo.Model.Cookie('version');
-					cookie.put({'version': Mojo.appInfo.version});
-				}
-				
-				this.executeLaunch(params);
-			}.bind(this, params)});
-			
-	}
-	else
-		this.executeLaunch(params);
+	this.executeLaunch(params);
 }
 
 AppAssistant.prototype.executeLaunch = function(params) {
@@ -76,11 +62,10 @@ AppAssistant.prototype.checkVersion = function() {
 	
 	if(!data)
 		isNewOrFirstStart = 1;	
-	else if(data.version !=  Mojo.appInfo.version) {
+	else if(data.version !=  Mojo.appInfo.version)
 		isNewOrFirstStart = 2;
-		
-		cookie.put({'version': Mojo.appInfo.version});
-	}
+
+	cookie.put({'version': Mojo.appInfo.version});
 
 	return isNewOrFirstStart;
 }

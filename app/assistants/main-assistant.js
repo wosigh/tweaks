@@ -173,8 +173,7 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 			this.controller.showAlertDialog({
 				title: $L("No tweaks available"),
 				message: "<div style='text-align:justify;'>There are no tweaks available. " +
-					"If you have installed Tweaks app after installing patches that use " +
-					"Tweaks then you need to reinstall those patches.</div>",
+					"The reason for this is that you don't have any tweaks patches installed.</div>",
 				choices:[
 					{label:$L("Ok"), value:"ok", type:'default'}],
 				preventCancel: false,
