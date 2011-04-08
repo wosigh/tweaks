@@ -47,6 +47,8 @@ MainAssistant.prototype.setup = function() {
 
 	this.controller.listen(this.controller.get('CategoriesList'), Mojo.Event.listTap, 
 		this.handleCategoryListTap.bind(this));
+
+	this.loadTweaksConfig();
 }
 
 //
@@ -59,78 +61,88 @@ MainAssistant.prototype.updatePreferences = function(response) {
 MainAssistant.prototype.handleCategoryListTap = function(event) {
 	var category = event.item.name.toLowerCase();
 	
-	var widgets = {listSelectors: 0, toggleButtons: 5, integerPickers: 0, 
+	var widgets = {listSelectors: 0, toggleButtons: 0, integerPickers: 0, 
 		listChoices:[], listLabels: [], pickerLabels: [], lowLimits: [], highLimits: []};
 	
-	var prefs = [];
-	var keys = {};
+	var list = [];
+	var prefs = {};
 	
 	if(this.config[category] != undefined) {
 		for(var group in this.config[category]) {
-			prefs.push({group: group, elements: ""});
+			list.push({group: group, elements: ""});
 		
 			for(var i = 0; i < this.config[category][group].length; i++) {
 				if(this.config[category][group][i].deleted != undefined)
 					continue;
-			
-				if((i == 0) && (this.config[category][group].length == 1))
-					prefs[prefs.length - 1].elements += "<div class='palm-row single'>";
-				else if(i == 0)
-					prefs[prefs.length - 1].elements += "<div class='palm-row first'>";
-				else if(i == (this.config[category][group].length - 1))
-					prefs[prefs.length - 1].elements += "<div class='palm-row last'>";
-				else
-					prefs[prefs.length - 1].elements += "<div class='palm-row'>";
 
-				if(this.config[category][group][i].type == "toggle-button") {
+				if((i == 0) && (this.config[category][group].length == 1))
+					list[list.length - 1].elements += "<div class='palm-row single'>";
+				else if(i == 0)
+					list[list.length - 1].elements += "<div class='palm-row first'>";
+				else if(i == (this.config[category][group].length - 1))
+					list[list.length - 1].elements += "<div class='palm-row last'>";
+				else
+					list[list.length - 1].elements += "<div class='palm-row'>";
+
+				list[list.length - 1].elements += "<div class='palm-row-wrapper'>";
+
+				if(this.config[category][group][i].type == "ToggleButton") {
 					var id = widgets.toggleButtons++;
 				
-					keys["valueToggleButton" + id] = this.config[category][group][i];
+					prefs["ToggleButton" + id] = this.config[category][group][i];
 									
-					prefs[prefs.length - 1].elements += "<div name='ToggleButton" + id + "' x-mojo-element='ToggleButton'></div>" + 
-						"<div class='title left'>" + this.config[category][group][i].label + "</div></div>";		
+					list[list.length - 1].elements += "<div class='help-overlay' id='helpToggleButton" + id + "'></div>" +
+						"<div name='ToggleButton" + id + "' x-mojo-element='ToggleButton'></div>" + 
+						"<div class='title left'>" + this.config[category][group][i].label + "</div>";		
 						
-					prefs[prefs.length - 1]["valueToggleButton" + id] = this.config[category][group][i].value;
+					list[list.length - 1]["valueToggleButton" + id] = this.config[category][group][i].value;
 				}
-				else if(this.config[category][group][i].type == "list-selector") {
+				else if(this.config[category][group][i].type == "ListSelector") {
 					var id = widgets.listSelectors++;
 
-					keys["valueListSelector" + id] = this.config[category][group][i];
+					prefs["ListSelector" + id] = this.config[category][group][i];
 									
 					widgets.listChoices.push(this.config[category][group][i].choices);
 					widgets.listLabels.push(this.config[category][group][i].label);
 
-					prefs[prefs.length - 1].elements += "<div name='ListSelector" + id + "' x-mojo-element='ListSelector'></div></div>";	
+					list[list.length - 1].elements += "<div class='help-overlay' id='helpListSelector" + id + "'></div>" +
+						"<div name='ListSelector" + id + "' x-mojo-element='ListSelector'></div>";	
 
-					prefs[prefs.length - 1]["valueListSelector" + id] = this.config[category][group][i].value;
+					list[list.length - 1]["valueListSelector" + id] = this.config[category][group][i].value;
 				}
-				else if(this.config[category][group][i].type == "integer-picker") {
+				else if(this.config[category][group][i].type == "IntegerPicker") {
 					var id = widgets.integerPickers++;
 
-					keys["valueIntegerPicker" + id] = this.config[category][group][i];
+					prefs["IntegerPicker" + id] = this.config[category][group][i];
 
 					widgets.pickerLabels.push(this.config[category][group][i].label);
 					widgets.lowLimits.push(this.config[category][group][i].min);
 					widgets.highLimits.push(this.config[category][group][i].max);
 
-					prefs[prefs.length - 1].elements += "<div name='IntegerPicker" + id + "' x-mojo-element='IntegerPicker'></div></div>";	
+					list[list.length - 1].elements += "<div class='help-overlay' id='helpIntegerPicker" + id + "'></div>" +
+						"<div name='IntegerPicker" + id + "' x-mojo-element='IntegerPicker'></div>";	
 					
-					prefs[prefs.length - 1]["valueIntegerPicker" + id] = this.config[category][group][i].value;
+					list[list.length - 1]["valueIntegerPicker" + id] = this.config[category][group][i].value;
 				}
+				
+				list[list.length - 1].elements += "</div></div>";				
 			}
 			
-			if(prefs[prefs.length - 1].elements == "")
-				prefs.pop();
+			if(list[list.length - 1].elements == "")
+				list.pop();
 		}
 	}
 
-	this.controller.stageController.pushScene("config", event.item.name, widgets, this.config, prefs, keys, this.modelCommandMenu.visible);
+	this.controller.stageController.pushScene("config", event.item.name, widgets, this.config, prefs, list, this.modelCommandMenu.visible);
 }
 
 MainAssistant.prototype.loadTweaksConfig = function() {
-	this.controller.serviceRequest("palm://com.palm.db", {method: "find", parameters: {
-		query: {from: this.DB_KIND, limit: 2 }},
-		onSuccess: this.handleTweaksConfig.bind(this)});
+	this.controller.serviceRequest("palm://org.webosinternals.tweaks.prefs", {method: "scan", parameters: {},
+		onSuccess: function(response) {
+			this.controller.serviceRequest("palm://com.palm.db", {method: "find", parameters: {
+				query: {from: this.DB_KIND, limit: 2 }},
+				onSuccess: this.handleTweaksConfig.bind(this)});
+		}.bind(this)});
 }
 
 MainAssistant.prototype.handleTweaksConfig = function(response) {
@@ -141,7 +153,7 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 	else {
 		this.config = response.results[0];
 
-		var categories = ["browser", "calendar", "contacts", "email", "messaging", "phone", "system"];
+		var categories = ["browser", "calendar", "contacts", "email", "messaging", "phone", "system", "topbar"];
 
 		this.categories.clear();
 
@@ -155,9 +167,9 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 				for(var group in this.config[category]) {
 					for(var j = 0; j < this.config[category][group].length; j++) {
 						if((this.config[category][group][j].deleted == undefined) && 
-							((this.config[category][group][j].type == "toggle-button") ||
-							(this.config[category][group][j].type == "list-selector") ||
-							(this.config[category][group][j].type == "integer-picker")))
+							((this.config[category][group][j].type == "ToggleButton") ||
+							(this.config[category][group][j].type == "ListSelector") ||
+							(this.config[category][group][j].type == "IntegerPicker")))
 						{
 							count++;
 							totalCount++;
@@ -180,6 +192,7 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 				allowHTMLMessage: true
 			});
 		}
+
 		
 		this.controller.modelChanged(this.modelCategoriesList, this);
 	}
@@ -227,8 +240,6 @@ MainAssistant.prototype.activate = function(event) {
 		
 		this.controller.modelChanged(this.modelCommandMenu, this);
 	}
-
-	this.loadTweaksConfig();
 }
 	
 MainAssistant.prototype.deactivate = function(event) {

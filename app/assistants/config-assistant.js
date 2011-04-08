@@ -2,7 +2,7 @@
  *    ConfigAssistant - Mode Launcher's Mode Edition Scene
 */
 
-function ConfigAssistant(category, widgets, config, prefs, keys, restartRequired) {
+function ConfigAssistant(category, widgets, config, prefs, list, restartRequired) {
 	/* This is the creator function for your scene assistant object. It will be passed all the 
 	 * additional parameters (after the scene name) that were passed to pushScene. The reference
 	 * to the scene controller (this.controller) has not be established yet, so any initialization
@@ -15,17 +15,15 @@ function ConfigAssistant(category, widgets, config, prefs, keys, restartRequired
 	this.widgets = widgets;
 	this.config = config;
 	this.prefs = prefs;
-	this.keys = keys;
+	this.list = list;
 }    
 
 ConfigAssistant.prototype.setup = function() {
+	this.helpItemTapped = this.handleHelpItemTapped.bind(this);
+
 	var category = this.category.charAt(0).toUpperCase() + this.category.slice(1);
 
-	this.itemsViewMenu = [{'label': $L(category + " Tweaks"), 'command': "none", 'width': 320}];
-
-	this.modelViewMenu = {'visible': true, 'items': this.itemsViewMenu};
-
-	this.controller.setupWidget(Mojo.Menu.viewMenu, undefined, this.modelViewMenu);
+	this.controller.get("config-title").innerHTML = $L(category + " Tweaks");
 
 	this.itemsCommandMenu = [{},{'label': $L("Luna Restart Required"), 'command': "restart"},{}];
 
@@ -33,7 +31,7 @@ ConfigAssistant.prototype.setup = function() {
 
 	this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, this.modelCommandMenu);
 
-	this.modelCategoriesList = {items: this.prefs, disabled: true};
+	this.modelCategoriesList = {items: this.list, disabled: true};
 	
 	this.controller.setupWidget("GroupsList", {
 		itemTemplate: 'templates/groups-item',
@@ -60,21 +58,59 @@ ConfigAssistant.prototype.setup = function() {
 
 	for(var i = 0; i < this.widgets.toggleButtons; i++) {
 		this.controller.setupWidget("ToggleButton" + i, {
-			falseValue: false, falseLabel: $L("No"), trueValue: true, trueLabel: $L("Yes"),
+			falseValue: false, falseLabel: $L("No"), 
+			trueValue: true, trueLabel: $L("Yes"),
 			'modelProperty': "valueToggleButton" + i});
 	}
 
 	this.controller.listen(this.controller.get("GroupsList"), Mojo.Event.propertyChange, this.saveTweaksConfig.bind(this));
+
+	this.controller.listen(this.controller.get('help-toggle'), Mojo.Event.tap, this.handleHelpButtonTapped.bindAsEventListener(this));
+}
+
+ConfigAssistant.prototype.handleHelpButtonTapped = function(event)
+{
+	if (this.controller.get('main').hasClassName('help')) {
+		this.controller.get('main').removeClassName('help');
+		event.target.removeClassName('selected');
+
+		this.controller.stopListening(this.controller.get("GroupsList"), Mojo.Event.listTap, this.helpItemTapped);
+	}
+	else {
+		this.controller.get('main').addClassName('help');
+		event.target.addClassName('selected');
+
+		this.controller.listen(this.controller.get("GroupsList"), Mojo.Event.listTap, this.helpItemTapped);
+	}
+}
+
+ConfigAssistant.prototype.handleHelpItemTapped = function(event) {
+	var id = event.originalEvent.target.id.slice(4);
+
+	var helpText = "No help text available for this item!";
+
+	if(this.prefs[id].help.length > 0)
+		helpText = this.prefs[id].help;
+	
+	this.controller.showAlertDialog({
+		title: this.prefs[id].label,
+		message: "<div style='text-align:justify;'>" + helpText + "</div>",
+		choices:[{"label": "Close", "command": "close"}],
+		preventCancel: false,
+		allowHTMLMessage: true,
+		});
 }
 
 ConfigAssistant.prototype.saveTweaksConfig = function(event) {
-	if(this.keys[event.property].restart == "luna") {
+	var id = event.property.slice(5);
+
+	if(this.prefs[id].restart == "luna") {
 		this.modelCommandMenu.visible = true;
 		
 		this.controller.modelChanged(this.modelCommandMenu, this);
 	}
-
-	this.keys[event.property].value = event.value;
+	
+	this.prefs[id].value = event.value;
 
 	this.controller.serviceRequest("palm://com.palm.db", {method: "merge", parameters: {
 		objects: [this.config]},

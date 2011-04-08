@@ -1,23 +1,3 @@
-var utils = (function() {
-	var that = {};
-
-	that.findArray = function(array, key, value) {
-		// Finds object from an array based on given key and value.
-
-		if(!array)
-			return -1;
-
-		for(var i = 0; i < array.length; i++) {
-		  if(array[i][key] == value)
-		    return i;
-		}
-
-		return -1;    
-	};
-
-	return that;
-}());
-
 var prefs = (function() {
 	var that = {};
 
@@ -39,6 +19,7 @@ var prefs = (function() {
 			messaging: {},
 			phone: {},
 			system: {},
+			topbar: {},
 			unknown: {}
 		};
 	};
@@ -102,14 +83,11 @@ var prefs = (function() {
 
 // Public functions...
 
-	that.init = function() {
-	};
-
 	that.load = function() {
 		var future = loadPrefs();
 		
 		future.then(this, function(future) {
-			console.log("Tweaks preferences loaded");
+			console.log("WebOS Tweaks preferences loaded");
 
 			var result = future.result;
 
@@ -128,7 +106,7 @@ var prefs = (function() {
 			future.nest(savePrefs(prefs));
 			
 			future.then(this, function(future) {
-				console.log("Tweaks preferences saved");
+				console.log("WebOS Tweaks preferences saved");
 
 //				notifySubscribers(prefs);
 
