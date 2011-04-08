@@ -26,7 +26,7 @@ MainAssistant.prototype.setup = function() {
     */
 
 	if(this.appAssistant.isNewOrFirstStart)
-		this.controller.get("subTitle").innerHTML = "Have you already <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DCSMTCCGMH5NA\">donated</a>?";
+		this.controller.get("subTitle").innerHTML = "Have you already <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donated</a>?";
 
 	this.controller.get("version").innerHTML = "v" + Mojo.Controller.appInfo.version;
 

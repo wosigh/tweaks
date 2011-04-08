@@ -7,7 +7,7 @@ function StartupAssistant() {
 		"<li>The app itself does not provide any tweaks, instead they are provided by patches</li>" +
 		"</ul>");
 	
-	this.secondMessage = $L("Please consider making a <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DCSMTCCGMH5NA\">donation</a> if you wish to show your appreciation.");
+	this.secondMessage = $L("Please consider making a <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donation</a> if you wish to show your appreciation.");
 
 	this.newMessages = [
 	{
