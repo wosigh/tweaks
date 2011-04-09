@@ -190,9 +190,9 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 			data = {total: 0};
 		
 		if((totalCount - data.total) == 0)
-			this.controller.get("total").innerHTML = "No new tweaks after last start";
+			this.controller.get("total").innerHTML = "No new tweaks since last start";
 		else if((totalCount - data.total) < 0)
-			this.controller.get("total").innerHTML = (data.total - totalCount) + " tweak(s) was removed";
+			this.controller.get("total").innerHTML = (data.total - totalCount) + " tweak(s) were removed";
 		else if((totalCount - data.total) > 0)
 			this.controller.get("total").innerHTML = (totalCount - data.total) + " new tweak(s) available";
 		
@@ -202,7 +202,7 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 			this.controller.showAlertDialog({
 				title: $L("No tweaks available"),
 				message: "<div style='text-align:justify;'>There are no tweaks available. " +
-					"The reason for this is that you don't have any tweaks patches installed.</div>",
+					"The reason for this is that you don't have any patches with tweaks installed.</div>",
 				choices:[
 					{label:$L("Ok"), value:"ok", type:'default'}],
 				preventCancel: false,
