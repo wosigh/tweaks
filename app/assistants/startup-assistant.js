@@ -4,7 +4,9 @@ function StartupAssistant() {
 
 	this.firstMessage = $L(
 		"<center><b>Here is some basic info for new users:</b></center><br><ul>" +
-		"<li>The app itself does not provide any tweaks, instead they are provided by patches</li>" +
+		"<li>Currently the application itself does not provide any tweaks, instead they are provided by patches</li>" +
+		"<li>You can install patches via preware, you can recognize patches that have tweaks from the green plus band-aid icon</li>" +
+		"<li>Settings are not applied to running applications, you need to restart the application which settings you change</li>" +
 		"</ul>");
 	
 	this.secondMessage = $L("Please consider making a <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donation</a> if you wish to show your appreciation.");

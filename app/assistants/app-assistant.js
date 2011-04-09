@@ -59,7 +59,7 @@ AppAssistant.prototype.checkVersion = function() {
 //	cookie.remove();
 
 	var data = cookie.get();
-	
+
 	if(!data)
 		isNewOrFirstStart = 1;	
 	else if(data.version !=  Mojo.appInfo.version)
