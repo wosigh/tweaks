@@ -25,7 +25,7 @@ ConfigAssistant.prototype.setup = function() {
 
 	this.controller.get("config-title").innerHTML = $L(category + " Tweaks");
 
-	this.itemsCommandMenu = [{},{'label': $L("Luna Restart Required"), 'command': "restart"},{}];
+	this.itemsCommandMenu = [{},{'label': $L("Luna Restart Required"), 'command': "restart", 'width': 320},{}];
 
 	this.modelCommandMenu = {'visible': this.restartRequired, 'items': this.itemsCommandMenu};
 

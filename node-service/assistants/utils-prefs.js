@@ -14,13 +14,16 @@ var prefs = (function() {
 			_kind: DB_KIND,
 			browser: {},
 			calendar: {},
+			camera: {},
+			clock: {},
 			contacts: {},
-			email: {},
-			messaging: {},
-			phone: {},
+			email: {},
+			messaging: {},
+			misc: {},
+			other: {},
+			phone: {},
 			system: {},
-			topbar: {},
-			unknown: {}
+			topbar: {}
 		};
 	};
 

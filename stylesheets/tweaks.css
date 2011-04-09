@@ -180,3 +180,16 @@
 	background-image: url(../images/helprow-last.png);
 }
 
+.main .palm-list .palm-row
+{
+	clear: none;
+	float: left;
+	width: 50%;
+	background: url(../images/list-separator-light-grid.png) bottom right no-repeat;
+	margin-bottom: -1px;
+}
+
+.label.left.mv-picker-label {
+	margin-top: 0px;
+}
+

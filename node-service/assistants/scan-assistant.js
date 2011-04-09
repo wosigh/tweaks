@@ -18,13 +18,16 @@ ScanCommandAssistant.prototype.run = function(future) {
 			_rev: config._rev,
 			browser: {},
 			calendar: {},
+			camera: {},
+			clock: {},
 			contacts: {},
 			email: {},
 			messaging: {},
+			misc: {},
+			other: {},
 			phone: {},
 			system: {},
-			topbar: {},
-			unknown: {}
+			topbar: {}
 		};
 
 		var fs = IMPORTS.require('fs');

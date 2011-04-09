@@ -30,7 +30,7 @@ MainAssistant.prototype.setup = function() {
 
 	this.controller.get("version").innerHTML = "v" + Mojo.Controller.appInfo.version;
 
-	this.itemsCommandMenu = [{},{'label': $L("Luna Restart Required"), 'command': "restart"},{}];
+	this.itemsCommandMenu = [{},{'label': $L("Luna Restart Required"), 'command': "restart", 'width': 320},{}];
 
 	this.modelCommandMenu = {'visible': false, 'items': this.itemsCommandMenu};
 
@@ -153,7 +153,8 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 	else {
 		this.config = response.results[0];
 
-		var categories = ["browser", "calendar", "contacts", "email", "messaging", "phone", "system", "topbar"];
+		var categories = ["browser", "calendar", "camera", "clock", "contacts", "email", 
+			"messaging", "misc", "other", "phone", "system", "topbar"];
 
 		this.categories.clear();
 
@@ -180,6 +181,22 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 
 			this.categories.push({name: category, count: count});
 		}
+		
+		var cookie = new Mojo.Model.Cookie('tweaks');
+
+		var data = cookie.get();
+		
+		if(!data)
+			data = {total: 0};
+		
+		if((totalCount - data.total) == 0)
+			this.controller.get("total").innerHTML = "No new tweaks after last start";
+		else if((totalCount - data.total) < 0)
+			this.controller.get("total").innerHTML = (data.total - totalCount) + " tweak(s) was removed";
+		else if((totalCount - data.total) > 0)
+			this.controller.get("total").innerHTML = (totalCount - data.total) + " new tweak(s) available";
+		
+		cookie.put({total: totalCount});
 		
 		if(totalCount == 0) {
 			this.controller.showAlertDialog({
