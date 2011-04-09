@@ -3,7 +3,7 @@ function StartupAssistant() {
 	this.appAssistant = this.appControl.assistant;
 
 	this.firstMessage = $L(
-		"<center><b>Here are some basic info for new users:</b></center><br><ul>" +
+		"<center><b>Here is some basic info for new users:</b></center><br><ul>" +
 		"<li>The app itself does not provide any tweaks, instead they are provided by patches</li>" +
 		"</ul>");
 	
@@ -11,9 +11,9 @@ function StartupAssistant() {
 
 	this.newMessages = [
 	{
-		version: '0.1.5', log: [
-			'<b>Requires WebOS 2.0.0 or newer to work!</b>',
-			'Initial release of Tweaks app for WebOS'
+		version: '1.0.0', log: [
+			'<b>Requires webOS 2.0.0 or newer to work!</b>',
+			'Initial release of Tweaks app for webOS'
 		]
 	}];
 	
