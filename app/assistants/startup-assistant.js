@@ -11,7 +11,7 @@ function StartupAssistant() {
 
 	this.newMessages = [
 	{
-		version: '0.0.9', log: [
+		version: '0.1.0', log: [
 			'<b>Requires WebOS 2.0.0 or newer to work!</b>',
 			'Initial release of Tweaks app for WebOS'
 		]
