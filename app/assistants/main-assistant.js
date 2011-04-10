@@ -30,6 +30,10 @@ MainAssistant.prototype.setup = function() {
 
 	this.controller.get("version").innerHTML = "v" + Mojo.Controller.appInfo.version;
 
+	this.modelWaitSpinner = { spinning: false };
+
+	this.controller.setupWidget('waitSpinner', {spinnerSize: Mojo.Widget.spinnerLarge}, this.modelWaitSpinner);
+
 	this.itemsCommandMenu = [{},{'label': $L("Luna Restart Required"), 'command': "restart", 'width': 320},{}];
 
 	this.modelCommandMenu = {'visible': false, 'items': this.itemsCommandMenu};
@@ -139,6 +143,12 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 }
 
 MainAssistant.prototype.loadTweaksConfig = function() {
+	this.controller.get("overlayScrim").show();
+
+	this.modelWaitSpinner.spinning = true;
+
+	this.controller.modelChanged(this.modelWaitSpinner, this);
+
 	this.controller.serviceRequest("palm://org.webosinternals.tweaks.prefs", {method: "scan", parameters: {},
 		onSuccess: function(response) {
 			this.controller.serviceRequest("palm://com.palm.db", {method: "find", parameters: {
@@ -148,6 +158,12 @@ MainAssistant.prototype.loadTweaksConfig = function() {
 }
 
 MainAssistant.prototype.handleTweaksConfig = function(response) {
+	this.controller.modelChanged(this.modelWaitSpinner, this);
+
+	this.controller.get("overlayScrim").hide();
+
+	this.modelWaitSpinner.spinning = false;
+
 	if (response.results.length === 0)
 		Mojo.Log.error("Errr no config");
 	else if (response.results.length > 1)
