@@ -19,8 +19,6 @@ var prefs = (function() {
 			contacts: {},
 			email: {},
 			messaging: {},
-			misc: {},
-			other: {},
 			phone: {},
 			system: {},
 			topbar: {}

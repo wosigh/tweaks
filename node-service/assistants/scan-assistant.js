@@ -23,11 +23,9 @@ ScanCommandAssistant.prototype.run = function(future) {
 			contacts: {},
 			email: {},
 			messaging: {},
-			misc: {},
-			other: {},
 			phone: {},
 			system: {},
-			topbar: {}
+			topbar: {}			
 		};
 
 		var fs = IMPORTS.require('fs');
@@ -57,7 +55,10 @@ ScanCommandAssistant.prototype.run = function(future) {
 					for(var i = 0; i < jsonData.length; i++) {
 						var category = jsonData[i].category;
 			
-						if((newConfig[category]) && (jsonData[i].prefs) && (jsonData[i].prefs.length)) {
+						if((jsonData[i].prefs) && (jsonData[i].prefs.length)) {
+							if(!newConfig[category])
+								newConfig[category] = {}; 
+						
 							for(var j = 0; j < jsonData[i].prefs.length; j++) {
 								if(jsonData[i].prefs[j].group) {
 									var group = jsonData[i].prefs[j].group.toLowerCase();

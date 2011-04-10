@@ -155,16 +155,15 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 	else {
 		this.config = response.results[0];
 
-		var categories = ["browser", "calendar", "camera", "clock", "contacts", "email", 
-			"messaging", "misc", "other", "phone", "system", "topbar"];
-
 		this.categories.clear();
 
 		var totalCount = 0;
 
-		for(var i = 0; i < categories.length; i++) {
+		for(var category in this.config) {
+			if(category.slice(0,1) == "_")
+				continue;
+		
 			var count = 0;
-			var category = categories[i];
 
 			if(this.config[category] != undefined) {
 				for(var group in this.config[category]) {
@@ -190,13 +189,15 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 		
 		if(!data)
 			data = {total: 0};
+			
+		var appController = Mojo.Controller.getAppController();
 		
 		if((totalCount - data.total) == 0)
-			this.controller.get("total").innerHTML = "No new tweaks since last start";
+			appController.showBanner($L("No new tweaks since last start"), {});
 		else if((totalCount - data.total) < 0)
-			this.controller.get("total").innerHTML = (data.total - totalCount) + " tweak(s) were removed";
+			appController.showBanner((data.total - totalCount) + $L(" tweak(s) were removed"), {});
 		else if((totalCount - data.total) > 0)
-			this.controller.get("total").innerHTML = (totalCount - data.total) + " new tweak(s) available";
+			appController.showBanner((totalCount - data.total) + $L(" new tweak(s) available"), {});
 		
 		cookie.put({total: totalCount});
 		
