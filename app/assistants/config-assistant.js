@@ -94,10 +94,10 @@ ConfigAssistant.prototype.handleHelpItemTapped = function(event) {
 	
 	this.controller.showAlertDialog({
 		title: this.prefs[id].label,
-		message: "<div style='text-align:justify;'>" + helpText + "</div>",
+		message: "<div style='text-align:justify;'>" + helpText + "</div><br>Owner: " +this.prefs[id].owner,
 		choices:[{"label": "Close", "command": "close"}],
 		preventCancel: false,
-		allowHTMLMessage: true,
+		allowHTMLMessage: true
 		});
 }
 
