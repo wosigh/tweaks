@@ -32,7 +32,7 @@ MainAssistant.prototype.setup = function() {
 
 	this.modelWaitSpinner = { spinning: false };
 
-	this.controller.setupWidget('waitSpinner', {spinnerSize: Mojo.Widget.spinnerLarge}, this.modelWaitSpinner);
+	this.controller.setupWidget('wait-spinner', {spinnerSize: Mojo.Widget.spinnerLarge}, this.modelWaitSpinner);
 
 	this.itemsCommandMenu = [{},{'label': $L("Luna Restart Required"), 'command': "restart", 'width': 320},{}];
 
@@ -143,8 +143,6 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 }
 
 MainAssistant.prototype.loadTweaksConfig = function() {
-	this.controller.get("overlayScrim").show();
-
 	this.modelWaitSpinner.spinning = true;
 
 	this.controller.modelChanged(this.modelWaitSpinner, this);
@@ -158,11 +156,9 @@ MainAssistant.prototype.loadTweaksConfig = function() {
 }
 
 MainAssistant.prototype.handleTweaksConfig = function(response) {
-	this.controller.modelChanged(this.modelWaitSpinner, this);
-
-	this.controller.get("overlayScrim").hide();
-
 	this.modelWaitSpinner.spinning = false;
+
+	this.controller.modelChanged(this.modelWaitSpinner, this);
 
 	if (response.results.length === 0)
 		Mojo.Log.error("Errr no config");
