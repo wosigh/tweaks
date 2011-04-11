@@ -10,6 +10,7 @@ test: package
 
 clean:
 	find . -name '*~' -delete
-	rm -f ipkgtmp*.tar.gz ${APPID}_*.ipk
+	rm -f ipkgtmp*.tar.gz
+	rm -f ${APPID}_*.ipk
 
 clobber: clean

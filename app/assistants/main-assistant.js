@@ -151,7 +151,8 @@ MainAssistant.prototype.loadTweaksConfig = function() {
 		onSuccess: function(response) {
 			this.controller.serviceRequest("palm://com.palm.db", {method: "find", parameters: {
 				query: {from: this.DB_KIND, limit: 2 }},
-				onSuccess: this.handleTweaksConfig.bind(this)});
+				onSuccess: this.handleTweaksConfig.bind(this),
+				onFailure: this.handleTweaksConfig.bind(this)});
 		}.bind(this)});
 }
 
@@ -160,75 +161,97 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 
 	this.controller.modelChanged(this.modelWaitSpinner, this);
 
-	if (response.results.length === 0)
-		Mojo.Log.error("Errr no config");
-	else if (response.results.length > 1)
-		Mojo.Log.error("More than 1 preferences object found");
+	if (response.returnValue === false) {
+		this.errorMessage('<b>Service Error (db8 find):</b><br>'+response.errorText);
+		this.config = [];
+	}
+	else if (response.results.length === 0) {
+		Mojo.Log.error("No preferences objects found.");
+		this.config = [];
+	}
+	else if (response.results.length > 1) {
+		Mojo.Log.error("More than 1 preferences object found, using first response");
+		this.config = response.results[0];
+	}
 	else {
 		this.config = response.results[0];
-
-		this.categories.clear();
-
-		var totalCount = 0;
-
-		for(var category in this.config) {
-			if(category.slice(0,1) == "_")
-				continue;
-		
-			var count = 0;
-
-			if(this.config[category] != undefined) {
-				for(var group in this.config[category]) {
-					for(var j = 0; j < this.config[category][group].length; j++) {
-						if((this.config[category][group][j].deleted == undefined) && 
-							((this.config[category][group][j].type == "ToggleButton") ||
-							(this.config[category][group][j].type == "ListSelector") ||
-							(this.config[category][group][j].type == "IntegerPicker")))
-						{
-							count++;
-							totalCount++;
-						}
-					}
-				}
-			}
-
-			this.categories.push({name: category, count: count, rowClass: (count == 0 ? 'disabled' : '')});
-		}
-		
-		var cookie = new Mojo.Model.Cookie('tweaks');
-
-		var data = cookie.get();
-		
-		if(!data)
-			data = {total: 0};
-			
-		var appController = Mojo.Controller.getAppController();
-		
-		if((totalCount - data.total) == 0)
-			appController.showBanner($L("No new tweaks since last start"), {});
-		else if((totalCount - data.total) < 0)
-			appController.showBanner((data.total - totalCount) + $L(" tweak(s) were removed"), {});
-		else if((totalCount - data.total) > 0)
-			appController.showBanner((totalCount - data.total) + $L(" new tweak(s) available"), {});
-		
-		cookie.put({total: totalCount});
-		
-		if(totalCount == 0) {
-			this.controller.showAlertDialog({
-				title: $L("No tweaks available"),
-				message: "<div style='text-align:justify;'>There are no tweaks available. " +
-					"The reason for this is that you don't have any patches with tweaks installed.</div>",
-				choices:[
-					{label:$L("Ok"), value:"ok", type:'default'}],
-				preventCancel: false,
-				allowHTMLMessage: true
-			});
-		}
-
-		
-		this.controller.modelChanged(this.modelCategoriesList, this);
 	}
+
+	this.categories.clear();
+
+	var totalCount = 0;
+
+	for(var category in this.config) {
+	    if(category.slice(0,1) == "_")
+		continue;
+		
+	    var count = 0;
+
+	    if(this.config[category] != undefined) {
+		for(var group in this.config[category]) {
+		    for(var j = 0; j < this.config[category][group].length; j++) {
+			if((this.config[category][group][j].deleted == undefined) && 
+			   ((this.config[category][group][j].type == "ToggleButton") ||
+			    (this.config[category][group][j].type == "ListSelector") ||
+			    (this.config[category][group][j].type == "IntegerPicker")))
+			    {
+				count++;
+				totalCount++;
+			    }
+		    }
+		}
+	    }
+
+	    this.categories.push({name: category, count: count, rowClass: (count == 0 ? 'disabled' : '')});
+	}
+		
+	var cookie = new Mojo.Model.Cookie('tweaks');
+
+	var data = cookie.get();
+		
+	if(!data)
+	    data = {total: 0};
+			
+	var appController = Mojo.Controller.getAppController();
+		
+	if((totalCount - data.total) == 0)
+	    appController.showBanner($L("No new tweaks since last start"), {});
+	else if((totalCount - data.total) < 0)
+	    appController.showBanner((data.total - totalCount) + $L(" tweak(s) were removed"), {});
+	else if((totalCount - data.total) > 0)
+	    appController.showBanner((totalCount - data.total) + $L(" new tweak(s) available"), {});
+		
+	cookie.put({total: totalCount});
+		
+	if(totalCount == 0) {
+	    this.controller.showAlertDialog({
+		    title: $L("No tweaks available"),
+			message: "<div style='text-align:justify;'>There are no tweaks available. " +
+			"The reason for this is that you don't have any patches with tweaks installed.</div>",
+			choices:[
+				 {label:$L("Ok"), value:"ok", type:'default'}],
+			preventCancel: false,
+			allowHTMLMessage: true
+			});
+	}
+
+		
+	this.controller.modelChanged(this.modelCategoriesList, this);
 }
+
+//
+
+MainAssistant.prototype.errorMessage = function(msg)
+{
+	this.controller.showAlertDialog({
+			allowHTMLMessage:	true,
+			preventCancel:		true,
+			title:				'Tweaks',
+			message:			msg,
+			choices:			[{label:$L("Ok"), value:'ok'}],
+			onChoose:			function(e){}
+		});
+};
 
 //
 
