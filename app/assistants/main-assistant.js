@@ -153,6 +153,19 @@ MainAssistant.prototype.loadTweaksConfig = function() {
 				query: {from: this.DB_KIND, limit: 2 }},
 				onSuccess: this.handleTweaksConfig.bind(this),
 				onFailure: this.handleTweaksConfig.bind(this)});
+		}.bind(this),
+		onFailure: function(response) {
+			this.modelWaitSpinner.spinning = false;
+
+			this.controller.modelChanged(this.modelWaitSpinner, this);
+		
+			this.controller.showAlertDialog({
+				allowHTMLMessage:	true,
+				preventCancel: true,
+				title: 'Tweaks',
+				message:	"<div style='text-align:justify;'>Failed to scan available tweaks. The possible reasons for this are that there was an installation error or an unknown service error.</div>",
+				choices:	[{label:$L("Ok"), value:'ok'}]
+			});
 		}.bind(this)});
 }
 

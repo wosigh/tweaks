@@ -188,14 +188,17 @@
 	background: url(../images/list-separator-light-grid.png) bottom right no-repeat;
 	margin-bottom: -1px;
 }
+
 .main .palm-list .palm-row.selected
 {
 	background: none;
 }
+
 .main .palm-list .palm-row .disabled .label
 {
 	display: none;
 }
+
 .main .palm-list .palm-row .disabled .title
 {
 	color: rgba(0, 0, 0, 0.5);
@@ -205,16 +208,18 @@
 {
 	position: relative;
 }
+
 .tweaks .label.left.mv-picker-label {
 	margin-top: 0px;
 	padding-top: 18px;
 	margin-bottom: -8px;
 	float: none;
 }
+
 .tweaks .mv-picker-capsule {
 	position: absolute;
 	right: -1px;
-	top: -3px;
+	top: -2px;
 }
 
 #wait-spinner {
