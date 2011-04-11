@@ -53,7 +53,7 @@ ScanCommandAssistant.prototype.run = function(future) {
 
 				if(jsonData instanceof Array) {
 					for(var i = 0; i < jsonData.length; i++) {
-						var category = jsonData[i].category;
+						var category = jsonData[i].category.toLowerCase();
 			
 						if((jsonData[i].prefs) && (jsonData[i].prefs.length)) {
 							if(!newConfig[category])

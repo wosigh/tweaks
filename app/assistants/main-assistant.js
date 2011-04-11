@@ -75,11 +75,11 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 		if(this.config[category] != undefined) {
 			for(var group in this.config[category]) {
 				list.push({group: group, elements: ""});
-			
+
 				for(var i = 0; i < this.config[category][group].length; i++) {
 					if(this.config[category][group][i].deleted != undefined)
 						continue;
-	
+
 					if((i == 0) && (this.config[category][group].length == 1))
 						list[list.length - 1].elements += "<div class='palm-row single'>";
 					else if(i == 0)
@@ -137,7 +137,7 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 					list.pop();
 			}
 		}
-	
+	Mojo.Log.error("AAAA " + JSON.stringify(this.config));
 		this.controller.stageController.pushScene("config", event.item.name, widgets, this.config, prefs, list, this.modelCommandMenu.visible);
 	}
 }
