@@ -137,7 +137,7 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 					list.pop();
 			}
 		}
-	Mojo.Log.error("AAAA " + JSON.stringify(this.config));
+
 		this.controller.stageController.pushScene("config", event.item.name, widgets, this.config, prefs, list, this.modelCommandMenu.visible);
 	}
 }
