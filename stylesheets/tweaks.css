@@ -147,11 +147,14 @@
 	display: none;
 	position: absolute;
 	z-index: 10000;
-	width: 300px;
-	height: 53px;
-	background-position: 3px 3px;
-	background-repeat: no-repeat;
-	background-image: url(../images/helprow.png);
+ width: auto;
+  height: auto;
+  border: 20px;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 4px;
+	-webkit-border-image: url(../images/helprow.png) 20 20 20 20 stretch stretch;
 }
 
 .tweaks .palm-row .palm-row-wrapper.textfield-group .help-overlay
@@ -167,17 +170,17 @@
 
 .tweaks .palm-row .first .palm-row-wrapper .help-overlay
 {
-	background-image: url(../images/helprow-first.png);
+	-webkit-border-image: url(../images/helprow-first.png) 20 20 20 20 stretch stretch;
 }
 
 .tweaks .palm-row .single .palm-row-wrapper .help-overlay
 {
-	background-image: url(../images/helprow-single.png);
+	-webkit-border-image: url(../images/helprow-single.png) 20 20 20 20 stretch stretch;
 }
 
 .tweaks .palm-row .last .palm-row-wrapper .help-overlay
 {
-	background-image: url(../images/helprow-last.png);
+	-webkit-border-image: url(../images/helprow-last.png) 20 20 20 20 stretch stretch;
 }
 
 .main .palm-list .palm-row
