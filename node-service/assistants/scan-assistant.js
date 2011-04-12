@@ -45,7 +45,7 @@ ScanCommandAssistant.prototype.run = function(future) {
 		
 		for(var fileIdx = 0; fileIdx < files.length; fileIdx++) {
 			if(files[fileIdx].slice(files[fileIdx].length - 5) == ".json") {
-				var owner = files[fileIdx].slice(0, files[fileIdx].length - 5);
+				var fileId = files[fileIdx].slice(0, files[fileIdx].length - 5);
 
 				var fileData = fs.readFileSync('/media/cryptofs/apps/usr/palm/services/org.webosinternals.tweaks.prefs/preferences/' + files[fileIdx], 'utf8');
 			
@@ -54,6 +54,7 @@ ScanCommandAssistant.prototype.run = function(future) {
 				if(jsonData instanceof Array) {
 					for(var i = 0; i < jsonData.length; i++) {
 						var category = jsonData[i].category.toLowerCase();
+						var owner = jsonData[i].owner || fileId;
 			
 						if((jsonData[i].prefs) && (jsonData[i].prefs.length)) {
 							if(!newConfig[category])
