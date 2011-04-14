@@ -1,0 +1,8 @@
+#!/bin/sh
+
+SID="org.webosinternals.tweaks.pref"
+
+# Remove the configurator cache file
+rm -f /var/cache/configurator/_media_cryptofs_apps_usr_palm_services_org.webosinternals.tweaks.prefs_configuration_db_permissions_org.webosinternals.tweaks.prefs
+
+exit 0
