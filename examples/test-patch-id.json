@@ -1,7 +1,7 @@
 [
 	{
 		"category": "system", 
-		"owner": "test-owner-id",
+		"owner": "com.mydomain.test-owner-id",
 		"prefs": [ {
 			"group": "behavior", 
 			"restart": "app",
