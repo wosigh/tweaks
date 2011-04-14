@@ -12,6 +12,8 @@ function StartupAssistant() {
 	this.secondMessage = $L("Please consider making a <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donation</a> if you wish to show your appreciation.");
 
 	this.newMessages = [
+	 {	version: '1.2.0', log: [ 'Work around the fatal webOS 2.x db permissions bug',
+					 'Remove and reinstall Tweaks *twice* to fix it' ] },
 	 {	version: '1.1.0', log: [ 'Allow for the tweaks json file to override the owner value' ] },
 	 {
 		version: '1.0.0', log: [
