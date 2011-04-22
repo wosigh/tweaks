@@ -66,8 +66,8 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 	if (event.item.count > 0) {
 		var category = event.item.name.toLowerCase();
 		
-		var widgets = {listSelectors: 0, toggleButtons: 0, integerPickers: 0, 
-			listChoices:[], listLabels: [], pickerLabels: [], lowLimits: [], highLimits: []};
+		var widgets = {listSelectors: 0, textFields: 0, toggleButtons: 0, integerPickers: 0, 
+			listChoices:[], listLabels: [], pickerLabels: [], lowLimits: [], highLimits: [], textInputs: []};
 		
 		var list = [];
 		var prefs = {};
@@ -101,6 +101,21 @@ MainAssistant.prototype.handleCategoryListTap = function(event) {
 							"<div class='title left'>" + this.config[category][group][i].label + "</div>";		
 							
 						list[list.length - 1]["valueToggleButton" + id] = this.config[category][group][i].value;
+					}
+					else if(this.config[category][group][i].type == "TextField") {
+						var id = widgets.textFields++;
+	
+						prefs["TextField" + id] = this.config[category][group][i];
+	
+						widgets.textInputs.push(this.config[category][group][i].input);
+																
+						list[list.length - 1].elements += "<div class='help-overlay' id='helpTextField" + id + "'></div>" +
+							"<div class='title left'>" + this.config[category][group][i].label + "</div>" +
+							"<div class='palm-row single' style='padding-left:10px;padding-right:10px;margin-top:-10px;padding-bottom:10px;'>" + 
+							"<div class='textfield-group' x-mojo-focus-highlight='true'><div class='title'>" +
+							"<div name='TextField" + id + "' class='focused' x-mojo-element='TextField'></div></div></div></div>";	
+	
+						list[list.length - 1]["valueTextField" + id] = this.config[category][group][i].value;
 					}
 					else if(this.config[category][group][i].type == "ListSelector") {
 						var id = widgets.listSelectors++;

@@ -127,6 +127,18 @@ ScanCommandAssistant.prototype.run = function(future) {
 														choices: choices});
 												}
 											}
+											else if(jsonData[i].prefs[j].type == "TextField") {
+												var input = "text";
+												
+												if(jsonData[i].prefs[j].input)
+													input = jsonData[i].prefs[j].input;
+											
+												newConfig[category][group].push({
+													owner: owner, type: "TextField", 
+													key: key, restart: restart,
+													help: help, label: label, value: value,
+													input: input});
+											}
 											else if(jsonData[i].prefs[j].type == "ToggleButton") {
 												newConfig[category][group].push({
 													owner: owner, type: "ToggleButton", 

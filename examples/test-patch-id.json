@@ -33,11 +33,29 @@
 		"prefs": [ {
 			"group": "misc", 
 			"restart": "none",
+			"label": "Label for the text item",
+			"help": "Help text for this item",
+			"key": "againYetAnotherUniqueKey",	
+			"type": "TextField",
+			"value": "Initial value text"
+		}, {
+			"group": "misc", 
+			"restart": "none",
+			"label": "Label for the numeric item",
+			"help": "Help text for this item",
+			"key": "againYetAnotherUniqueKey",	
+			"type": "TextField",
+			"value": "",
+			"input": "numeric"
+		}, {
+			"group": "misc", 
+			"restart": "none",
 			"label": "Label for this item",
 			"help": "Help text for this item",
 			"key": "someYetAnotherUniqueKey",	
 			"type": "ToggleButton",
-			"value": false
-		} ]
+			"value": false,
+			"input": "text"
+			} ]
 	}
 ]

@@ -16,6 +16,12 @@ function ConfigAssistant(category, widgets, config, prefs, list, restartRequired
 	this.config = config;
 	this.prefs = prefs;
 	this.list = list;
+	
+	this.matchNumeric = /^[0-9]*$/;
+	this.matchFreeText = /^[-_a-zA-Z0-9/.~]*$/;
+	
+	this.matchNumericList = "0-9";
+	this.matchFreeTextList = "a-z A-Z 0-9 -_/.~";
 }    
 
 ConfigAssistant.prototype.setup = function() {
@@ -56,6 +62,24 @@ ConfigAssistant.prototype.setup = function() {
 			'modelProperty': "valueListSelector" + i});
 	}
 
+	for(var i = 0; i < this.widgets.textFields; i++) {
+		if(this.widgets.textInputs[i] == "numeric") {
+			this.controller.setupWidget("TextField" + i, {
+				'autoReplace': false, 'autoFocus': false,
+				'charsAllow': this.checkAllowedChars.bind(this, "numeric"),
+				'hintText': "Numeric value...",
+				'modifierState': Mojo.Widget.numLock,
+				'modelProperty': "valueTextField" + i});
+		}
+		else {
+			this.controller.setupWidget("TextField" + i, {
+				'autoReplace': false, 'autoFocus': false,
+				'charsAllow': this.checkAllowedChars.bind(this, "text"),
+				'hintText': "Free text value...",
+				'modelProperty': "valueTextField" + i});
+		}		
+	}
+
 	for(var i = 0; i < this.widgets.toggleButtons; i++) {
 		this.controller.setupWidget("ToggleButton" + i, {
 			falseValue: false, falseLabel: $L("No"), 
@@ -66,6 +90,22 @@ ConfigAssistant.prototype.setup = function() {
 	this.controller.listen(this.controller.get("GroupsList"), Mojo.Event.propertyChange, this.saveTweaksConfig.bind(this));
 
 	this.controller.listen(this.controller.get('help-toggle'), Mojo.Event.tap, this.handleHelpButtonTapped.bindAsEventListener(this));
+
+	this.controller.setInitialFocusedElement(null); 
+}
+
+ConfigAssistant.prototype.checkAllowedChars = function(input, keyCode)
+{
+	if((String.fromCharCode(keyCode).match(this.matchNumeric)) ||
+		((input != "numeric") && 
+		(String.fromCharCode(keyCode).match(this.matchFreeText))))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 ConfigAssistant.prototype.handleHelpButtonTapped = function(event)
@@ -94,7 +134,7 @@ ConfigAssistant.prototype.handleHelpItemTapped = function(event) {
 	
 	this.controller.showAlertDialog({
 		title: this.prefs[id].label,
-		message: "<div style='text-align:justify;'>" + helpText + "</div><br>Owner: " +this.prefs[id].owner,
+		message: "<div style='text-align:justify;'>" + helpText + "</div><br>Owner: " + this.prefs[id].owner,
 		choices:[{"label": "Close", "command": "close"}],
 		preventCancel: false,
 		allowHTMLMessage: true
@@ -104,6 +144,30 @@ ConfigAssistant.prototype.handleHelpItemTapped = function(event) {
 ConfigAssistant.prototype.saveTweaksConfig = function(event) {
 	var id = event.property.slice(5);
 
+	if(id.slice(0,9) == "TextField") {
+		for(var i = 0; i < event.value.length; i++) {
+			if((!event.value[i].match(this.matchNumeric)) &&
+				((this.prefs[id].input == "numeric") || 
+				(!event.value[i].match(this.matchFreeText))))
+			{
+				var allowedChars = this.matchFreeTextList;
+					
+				if(this.prefs[id].input == "numeric")
+					allowedChars = this.matchNumericList;
+			
+				this.controller.showAlertDialog({
+					title: this.prefs[id].label,
+					message: "<div style='text-align:justify;'>Unallowed characters included in the value! Allowed characters: " + allowedChars + "</div>",
+					choices:[{"label": "Close", "command": "close"}],
+					preventCancel: false,
+					allowHTMLMessage: true
+					});
+			
+				return;
+			}
+		}
+	}
+	
 	if(this.prefs[id].restart == "luna") {
 		this.modelCommandMenu.visible = true;
 		
