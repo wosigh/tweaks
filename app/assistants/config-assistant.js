@@ -18,10 +18,10 @@ function ConfigAssistant(category, widgets, config, prefs, list, restartRequired
 	this.list = list;
 	
 	this.matchNumeric = /^[0-9]*$/;
-	this.matchFreeText = /^[-_a-zA-Z0-9/.~]*$/;
+	this.matchFreeText = /^[-_a-zA-Z0-9/.:@%~]*$/;
 	
 	this.matchNumericList = "0-9";
-	this.matchFreeTextList = "a-z A-Z 0-9 -_/.~";
+	this.matchFreeTextList = "a-z A-Z 0-9 -_/.:@%~";
 }    
 
 ConfigAssistant.prototype.setup = function() {
