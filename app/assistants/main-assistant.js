@@ -219,7 +219,8 @@ MainAssistant.prototype.handleTweaksConfig = function(response) {
 		for(var group in this.config[category]) {
 		    for(var j = 0; j < this.config[category][group].length; j++) {
 			if((this.config[category][group][j].deleted == undefined) && 
-			   ((this.config[category][group][j].type == "ToggleButton") ||
+			   ((this.config[category][group][j].type == "TextField") ||
+				 (this.config[category][group][j].type == "ToggleButton") ||
 			    (this.config[category][group][j].type == "ListSelector") ||
 			    (this.config[category][group][j].type == "IntegerPicker")))
 			    {
