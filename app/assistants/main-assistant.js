@@ -25,7 +25,11 @@ MainAssistant.prototype.setup = function() {
     * Setup widgets and add event handlers to listen to events from widgets here. 
     */
 
-	if(this.appAssistant.isNewOrFirstStart)
+	var date = new Date();
+
+	if((date.getMonth() < 6) && (date.getFullYear() == "2011"))
+		this.controller.get("subTitle").innerHTML = "Buy <a href=\"http://www.webos-internals.org/wiki/User:Sconix\">sconix</a> a Veer (by <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=7A4RPR9ZX3TYS&lc=FI&item_name=For%20mode%20switcher%20and%20advanced%20patches&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted\">donating</a>)";
+	else if(this.appAssistant.isNewOrFirstStart)
 		this.controller.get("subTitle").innerHTML = "Have you already <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donated</a>?";
 
 	this.controller.get("version").innerHTML = "v" + Mojo.Controller.appInfo.version;
