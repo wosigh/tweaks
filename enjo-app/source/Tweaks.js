@@ -106,11 +106,11 @@ enyo.kind({
 
 	handleInfo: function(inSender, inNewTotal, inOldTotal) {
 		if(inNewTotal == 0)
-			this.$.tweaks.setContent("There are no tweaks available");		
+			this.$.tweaks.setContent("There are no tweaks available");
 		else if((inNewTotal - inOldTotal) < 0)
 			this.$.tweaks.setContent("There was " + (inOldTotal - inNewTotal) + " tweak(s) removed");		
 		else if((inNewTotal - inOldTotal) > 0)
-			this.$.tweaks.setContent("There is " + (inNewTotal - inOldTotal) + " new tweak(s) available");
+			this.$.tweaks.setContent("There are " + (inNewTotal - inOldTotal) + " new tweak(s) available");
 		else 
 			this.$.tweaks.setContent("There are " + inNewTotal + " tweak(s) available");
 	},	

@@ -24,8 +24,7 @@ ScanCommandAssistant.prototype.run = function(future) {
 			email: {},
 			messaging: {},
 			phone: {},
-			system: {},
-			topbar: {}			
+			system: {}			
 		};
 
 		var fs = IMPORTS.require('fs');

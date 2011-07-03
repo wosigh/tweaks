@@ -3,6 +3,8 @@ var prefs = (function() {
 
 	var Foundations = IMPORTS.foundations;
 
+	var Future = IMPORTS.foundations.Control.Future;
+
 	var DB = Foundations.Data.DB;
 
 	var DB_KIND = "org.webosinternals.tweaks:1";
@@ -20,8 +22,7 @@ var prefs = (function() {
 			email: {},
 			messaging: {},
 			phone: {},
-			system: {},
-			topbar: {}
+			system: {}
 		};
 	};
 
@@ -58,30 +59,6 @@ var prefs = (function() {
 		return future;
 	};
 
-//
-
-/*	var notifySubscribers = function(prefs) {
-		for(var id in subscriptions) {
-			var notifyKeys = null;
-
-			for(var key in prefs) {
-				if(subscriptions[id].keys.indexOf(key) != -1) {
-					if(!notifyKeys)
-						notifyKeys = {};
-				
-					notifyKeys[key] = prefs[key];
-				}
-			}
-
-			if(notifyKeys) {
-				var future = subscriptions[id].factory.get();
-				
-				future.result = notifyKeys;
-			}
-		}
-	};
-*/
-
 // Public functions...
 
 	that.load = function() {
@@ -99,36 +76,19 @@ var prefs = (function() {
 	};
 
 	that.save = function(prefs) {
-		var future = loadPrefs(future);
+		var future = new Future();		
+		
+		future.nest(savePrefs(prefs));
 		
 		future.then(this, function(future) {
-			var result = future.result;
-			
-			future.nest(savePrefs(prefs));
-			
-			future.then(this, function(future) {
-				console.log("WebOS Tweaks preferences saved");
+			console.log("WebOS Tweaks preferences saved");
 
-//				notifySubscribers(prefs);
-
-				future.result = { returnValue: true };
-			});
+			future.result = { returnValue: true };
 		});
 
 		return future;
 	};
 
-//
-	
-/*	that.addSubscription = function(id, keys, factory) {
-		subscriptions[id] = {'keys': keys, 'factory': factory};
-	};
-
-	that.delSubscription = function(id) {
-		if(subscriptions[id])
-			delete subscriptions[id];
-	};
-*/
 	return that;
 }());
 
