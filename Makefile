@@ -1,7 +1,7 @@
 APPID = org.webosinternals.tweaks
 
 package: clean
-	palm-package . package node-service
+	palm-package enjo-app package node-service
 	ar q ${APPID}_*.ipk pmPreRemove.script
 
 test: package

@@ -9,9 +9,10 @@ function StartupAssistant() {
 		"<li>When you change the settings for a running application, you need to restart the application to see the change</li>" +
 		"</ul>");
 	
-	this.secondMessage = $L("Please consider making a <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donation</a> if you wish to show your appreciation.");
+	this.secondMessage = $L("Have you already <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donated</a>?");
 
 	this.newMessages = [
+	 {	version: '1.5.0', log: [ 'Added enyo based user interface for the tablet' ] },
 	 {	version: '1.3.3', log: [ 'Added more characters to be allowed for the text fields' ] },
 	 {	version: '1.3.2', log: [ 'Promotional release to support sconix, no new features' ] },
 	 {	version: '1.3.1', log: [ 'Fixed text field tweaks not count as new tweaks bug' ] },
