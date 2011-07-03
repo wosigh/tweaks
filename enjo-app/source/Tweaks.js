@@ -101,7 +101,7 @@ enyo.kind({
 	},
 
 	handleStartupDone: function() {
-		this.$.pane.selectViewByIndex(1);
+		this.$.pane.selectViewByIndex(0);
 	},
 
 	handleInfo: function(inSender, inNewTotal, inOldTotal) {
