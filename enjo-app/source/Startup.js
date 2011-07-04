@@ -9,7 +9,7 @@ enyo.kind({
 	},
 	
 	components: [{
-		kind: "wi.Header", random: [{weight: 100, tagline: "Welcome to Tweaks!"}]
+		name: "pageHeader", kind: "wi.Header", random: [{weight: 100, tagline: "Welcome to Tweaks!"}]
 	}, {
 		layoutKind: "VFlexLayout", flex: 1, align: "left", style: "padding-right: 10px; font-size: 14px;", components: [{		
 			name: "changelogScroller", kind: "Scroller", height: "613px", components: [{
@@ -18,6 +18,10 @@ enyo.kind({
 					"<li>You can install patches using Preware, and you can recognize patches that have tweaks available by looking for the green plus band-aid badge</li>" +
 					"<li>When you change the settings for a running application, you need to restart the application to see the change</li>" +
 					"</ul><br>"
+			},{
+				kind: "Divider", caption: "1.5.2"
+			},{
+				content: "<ul><li>Small update for the tablet user interface</li></ul>"
 			},{
 				kind: "Divider", caption: "1.5.1"
 			},{
@@ -75,6 +79,8 @@ enyo.kind({
 	},
 	
 	hideWelcome: function() {
+		this.$.pageHeader.$.tagline.setContent("Have you already <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donated</a>?");
+	
 		this.$.instructions.hide();
 	},
 	

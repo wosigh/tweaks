@@ -63,7 +63,7 @@ enyo.kind({
 		this.$.empty.show();
 
 		this.$.restart.hide();
-
+				
 		if((localStorage) && (localStorage["prefs"])) {
 			prefs = enyo.mixin(this._defaults, enyo.json.parse(localStorage["prefs"]));
 
