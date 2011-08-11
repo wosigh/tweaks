@@ -19,6 +19,10 @@ enyo.kind({
 					"<li>When you change the settings for a running application, you need to restart the application to see the change</li>" +
 					"</ul><br>"
 			},{
+				kind: "Divider", caption: "1.6.0"
+			},{
+				content: "<ul><li>First public release of tweaks with enyo UI</li></ul>"
+			},{
 				kind: "Divider", caption: "1.5.2"
 			},{
 				content: "<ul><li>Small update for the tablet user interface</li></ul>"
