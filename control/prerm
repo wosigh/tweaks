@@ -1,8 +1,42 @@
 #!/bin/sh
 
-SID="org.webosinternals.tweaks.pref"
+SID="org.webosinternals.tweaks.prefs"
 
-# Remove the configurator cache file
-rm -f /var/cache/configurator/_media_cryptofs_apps_usr_palm_services_org.webosinternals.tweaks.prefs_configuration_db_permissions_org.webosinternals.tweaks.prefs
+APPS="/media/cryptofs/apps"
+
+SDIR="${APPS}/usr/palm/services/${SID}"
+
+# Handle execution as pmPreRemove.script
+
+if [ -z "$IPKG_OFFLINE_ROOT" ]; then
+  IPKG_OFFLINE_ROOT=/media/cryptofs/apps
+  mount -o remount,rw /
+fi
+
+[ -d $APPS ] || { echo "Requires webOS 1.3.5 or later" ; exit 1 ; }
+
+# Stop the JS service if running
+
+/usr/bin/luna-send -n 1 palm://${SID}/__quit '{}'
+
+# Remove the dbus service
+
+rm -f /var/palm/ls2/services/prv/${SID}.json
+rm -f /var/palm/ls2/services/pub/${SID}.json
+
+# Remove the ls2 roles
+
+rm -f /var/palm/ls2/roles/prv/${SID}.json
+rm -f /var/palm/ls2/roles/pub/${SID}.json
+
+#
+# Cleanup the JS service here due to WebOS bugs
+#
+
+rm -f /var/cache/configurator/*webosinternals.tweaks*
+
+rm -f /var/palm/ls2/roles/*/*webosinternals.tweaks*
+
+rm -f /var/palm/ls2/services/*/*webosinternals.tweaks*
 
 exit 0
