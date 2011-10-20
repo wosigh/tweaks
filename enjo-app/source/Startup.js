@@ -19,6 +19,10 @@ enyo.kind({
 					"<li>When you change the settings for a running application, you need to restart the application to see the change</li>" +
 					"</ul><br>"
 			},{
+				kind: "Divider", caption: "1.6.2"
+			},{
+				content: "<ul><li>Small fix for the installation of the service</li></ul>"
+			},{
 				kind: "Divider", caption: "1.6.1"
 			},{
 				content: "<ul><li>Fixed the black bar in Mojo UI for Pre3</li></ul>"
