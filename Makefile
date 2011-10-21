@@ -2,6 +2,7 @@ APPID = org.webosinternals.tweaks
 
 package: clean
 	palm-package enjo-app package node-service
+	ar q ${APPID}_*.ipk pmPostInstall.script
 	ar q ${APPID}_*.ipk pmPreRemove.script
 
 test: package

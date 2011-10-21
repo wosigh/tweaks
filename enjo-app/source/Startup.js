@@ -19,9 +19,13 @@ enyo.kind({
 					"<li>When you change the settings for a running application, you need to restart the application to see the change</li>" +
 					"</ul><br>"
 			},{
-				kind: "Divider", caption: "1.6.3"
+				kind: "Divider", caption: "1.6.5"
 			},{
-				content: "<ul><li>Fixed a small typo in the installation script</li></ul>"
+				content: "<ul><li>Installation problems should be finally fixed</li></ul>"
+			},{
+				kind: "Divider", caption: "1.6.4"
+			},{
+				content: "<ul><li>Another small bug fix for the installation</li></ul>"
 			},{
 				kind: "Divider", caption: "1.6.2"
 			},{
