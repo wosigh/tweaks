@@ -32,15 +32,15 @@ rm -f /var/palm/ls2/services/pub/${SID}.service
 
 mkdir -p /var/palm/ls2/roles/prv /var/palm/ls2/roles/pub
 
-cp ${APPS}/usr/palm/services/${SID}/${SID}.json /var/palm/ls2/roles/prv/${SID}.json
-cp ${APPS}/usr/palm/services/${SID}/${SID}.json /var/palm/ls2/roles/pub/${SID}.json
+cp ${SDIR}/${SID}.json /var/palm/ls2/roles/prv/${SID}.json
+cp ${SDIR}/${SID}.json /var/palm/ls2/roles/pub/${SID}.json
 
 # Install the dbus service configuration
 
 mkdir -p /var/palm/ls2/services/prv /var/palm/ls2/services/pub
 
-cp ${APPS}/usr/palm/services/${SID}/${SID}.service /var/palm/ls2/services/prv/${SID}.service
-cp ${APPS}/usr/palm/services/${SID}/${SID}.service /var/palm/ls2/services/pub/${SID}.service
+cp ${SDIR}/${SID}.service /var/palm/ls2/services/prv/${SID}.service
+cp ${SDIR}/${SID}.service /var/palm/ls2/services/pub/${SID}.service
 
 # Stop the JS service if running
 
