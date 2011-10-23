@@ -144,6 +144,28 @@ ScanCommandAssistant.prototype.run = function(future) {
 													key: key, restart: restart,
 													help: help, label: label, value: value});
 											}
+											else if(jsonData[i].prefs[j].type == "FilePicker") {
+												var path = "/media/internal/downloads";
+												
+												if(jsonData[i].prefs[j].path)
+													path = jsonData[i].prefs[j].path;
+
+												var filter = "files";
+												
+												if(jsonData[i].prefs[j].filter)
+													filter = jsonData[i].prefs[j].filter;
+
+												var select = "single";
+												
+												if(jsonData[i].prefs[j].select == true)
+													select = jsonData[i].prefs[j].select;
+											
+												newConfig[category][group].push({
+													owner: owner, type: "FilePicker", 
+													key: key, restart: restart,
+													help: help, label: label, value: value,
+													path: path, filter: filter, select: select});
+											}
 										}
 									}
 								}

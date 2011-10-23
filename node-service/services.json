@@ -9,6 +9,11 @@
 		"description": "Background service for Tweaks App",
 		"commands": [ 
 			{ 
+				"name": "list", 
+				"assistant": "ListCommandAssistant",
+				"public": false
+			},
+			{ 
 				"name": "scan", 
 				"assistant": "ScanCommandAssistant",
 				"public": true

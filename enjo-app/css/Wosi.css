@@ -36,3 +36,20 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+
+.wi-picker {
+	height: 250px;
+	border-style: groove;
+}
+
+.wi-picker-item {
+	background: white;
+	opacity:0.6;
+	font-size: 14px;
+}
+
+.wi-picker-item.selected {
+	opacity:1.0;
+}
+

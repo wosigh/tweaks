@@ -19,6 +19,11 @@ enyo.kind({
 					"<li>When you change the settings for a running application, you need to restart the application to see the change</li>" +
 					"</ul><br>"
 			},{
+				kind: "Divider", caption: "1.8.0"
+			},{
+				content: "<ul><li>Added support for file picker widget (only enyo UI)</li>" + 
+					"<li>Made the enyo interface work on phones as well</li></ul>"
+			},{
 				kind: "Divider", caption: "1.6.5"
 			},{
 				content: "<ul><li>Installation problems should be finally fixed</li></ul>"

@@ -97,7 +97,8 @@ enyo.kind({
 						((inResponse.results[0][category][group][j].type == "TextField") ||
 						(inResponse.results[0][category][group][j].type == "ToggleButton") ||
 						(inResponse.results[0][category][group][j].type == "ListSelector") ||
-						(inResponse.results[0][category][group][j].type == "IntegerPicker")))
+						(inResponse.results[0][category][group][j].type == "IntegerPicker") ||
+						(inResponse.results[0][category][group][j].type == "FilePicker")))
 						{
 							count++;
 							totalCount++;

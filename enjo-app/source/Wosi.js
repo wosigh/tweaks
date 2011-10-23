@@ -1,6 +1,7 @@
 enyo.kind({
 	name: 'wi.Header',
 	kind: enyo.Control,
+	
 	published: {
 		type:		'',
 		icon:		'',
@@ -10,6 +11,7 @@ enyo.kind({
 		date:		[],
 		random:		[]
 	},
+	
 	_selected:	false,
 	_icon:		'',
 	_title:		'',
@@ -83,6 +85,118 @@ enyo.kind({
 				ran -= this.random[r].weight;
 		}
 		return this.random[0];
+	}	
+});
+
+enyo.kind({
+	name: 'wi.Picker',
+	kind: enyo.Control,
+	
+	events: {
+		onSelect: ""
 	},
 	
+	published: {
+		title:		'',
+		items:		[],
+	
+		multiSelect:	false
+	},
+	
+	_title:		'',
+	_items:	[],
+	
+	_multiSelect: false,
+	
+	components: [
+		{name: "pickerPopup", lazy: false, kind: "Popup", style: "width: 80%;max-width: 500px;", components: [
+			{name: "pickerTitle", content: "", flex: 1, style: "text-align: center;"},
+			{name: "pickerFiles", kind: "VirtualList", className: "wi-picker", onSetupRow: "setupPickerRow", components: [
+				{name: "pickerItem", kind: "Item", tapHighlight: false, className: "wi-picker-item", onclick: "handleItemSelect", components: [
+					{name: "pickerName", content: ""}
+				]}
+			]},
+			{layoutKind: "HFlexLayout", components: [
+				{kind: "Button", flex: 1, caption: "Cancel", onclick: "handlePickerCancel"},
+				{kind: "Button", flex: 1, caption: "OK", className: "enyo-button-affirmative", onclick: "handlePickerConfirm"}
+			]}
+		]}
+	],
+	
+	rendered: function() {
+		this._title		= this.title || "";
+		this._items		= this.items || [];
+		
+		this._multiSelect		= this.multiSelect || false;
+
+		this.$.pickerTitle.setContent(this._title);
+	},
+	
+	setTitle: function(inTitle) {
+		this._title = inTitle;
+		
+		this.$.pickerTitle.setContent(this._title);
+	},
+	
+	setItems: function(inItems) {
+		this._items = inItems;
+		
+		this.$.pickerFiles.refresh();
+	},
+	
+	openPicker: function() {
+		this.$.pickerPopup.openAtCenter();
+	},
+	
+	setupPickerRow: function(inSender, inIndex) {
+		if(inIndex < this._items.length) {
+			if(this._items[inIndex].selected)
+				this.$.pickerItem.addClass("selected");
+			else
+				this.$.pickerItem.addRemoveClass("selected");
+			
+			this.$.pickerName.setContent(this._items[inIndex].label);
+		
+			return true;
+		}
+	},
+
+	handleItemSelect: function(inSender, inEvent) {
+		if(!this._multiSelect) {
+			for(var i = 0; i < this._items.length; i++) {			
+				this._items[i].selected = false;
+			}
+		}
+		
+		if(!inSender.hasClass("selected")) {
+			this._items[inEvent.rowIndex].selected = true;
+		
+			inSender.addClass("selected");
+		} else {
+			this._items[inEvent.rowIndex].selected = false;		
+		
+			inSender.addRemoveClass("selected");
+		}
+
+		if(!this._multiSelect)
+			this.$.pickerFiles.refresh();			
+	},
+
+	handlePickerCancel: function() {
+		this.$.pickerPopup.close();
+	},
+	
+	handlePickerConfirm: function() {
+		this.$.pickerPopup.close();	
+		
+		var items = [];
+		
+		for(var i = 0; i < this._items.length; i++) {
+			if(this._items[i].selected)
+				items.push(this._items[i].value);
+		}
+		
+		this.doSelect(items);	
+	}
 });
+

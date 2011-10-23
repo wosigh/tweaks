@@ -133,6 +133,14 @@ enyo.kind({
 							{content: inGroups[group][i].label, flex: 1, className: "enyo-label"},
 							{name: inGroups[group][i].key, kind: "ToggleButton", onLabel: "Yes", offLabel: "No", state: inGroups[group][i].value, onChange: "handleToggle"}]});
 					}
+					else if(inGroups[group][i].type == "FilePicker") {
+						help.push({label: inGroups[group][i].label, help: inGroups[group][i].help});
+/*
+						items.push({kind: "Item", layoutKind: "HFlexLayout", align: "center", pack: "center", components: [
+							{content: inGroups[group][i].label, flex: 1, className: "enyo-label"},
+							{name: inGroups[group][i].key, kind: "ToggleButton", onLabel: "Yes", offLabel: "No", state: inGroups[group][i].value, onChange: "handleToggle"}]});
+*/
+					}
 				}
 
 				this._help[group] = help;

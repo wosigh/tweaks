@@ -12,6 +12,7 @@ function StartupAssistant() {
 	this.secondMessage = $L("Have you already <a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZFYPT3NYR36YJ\">donated</a>?");
 
 	this.newMessages = [
+	 {	version: '1.8.0', log: [ 'Feature updates for the enyo user interface' ] },
 	 {	version: '1.6.5', log: [ 'Installation problems should be finally fixed' ] },
 	 {	version: '1.6.4', log: [ 'Another small bug fix for the installation' ] },
 	 {	version: '1.6.3', log: [ 'Fixed a small typo in the installation script' ] },

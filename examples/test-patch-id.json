@@ -56,6 +56,20 @@
 			"type": "ToggleButton",
 			"value": false,
 			"input": "text"
-			} ]
+		} ]
+	}, {
+		"category": "misc", 
+		"prefs": [ {
+			"group": "fonts", 
+			"restart": "none",
+			"label": "Label for the picker dialog",
+			"help": "Help text for this item",
+			"key": "againYetAnotherUniqueKey",	
+			"type": "FilePicker",
+			"path": "/media/internal/downloads",
+			"filter": "files",
+			"select": "single", 
+			"value": ["/media/internal/downloads/test.txt"]			
+		} ]
 	}
 ]
