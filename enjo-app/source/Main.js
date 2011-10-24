@@ -14,39 +14,37 @@ enyo.kind({
 		onParsed: ""
 	},
 	
-	components: [{
-		name: "srvGetPrefs", kind: "DbService", 
+	components: [
+		{name: "srvGetPrefs", kind: "DbService", 
 			dbKind: "org.webosinternals.tweaks:1",
-			method: "find", onSuccess: "handlePrefs", onFailure: "serviceError"
-	}, { 
-		name: "srvScanTweaks", kind: "PalmService", 
+			method: "find", onSuccess: "handlePrefs", onFailure: "serviceError"}, 
+		
+		{name: "srvScanTweaks", kind: "PalmService", 
 			service: "palm://org.webosinternals.tweaks.prefs/",
-			method: "scan", onSuccess: "handleTweaks", onFailure: "serviceError"
-	}, { 
-		name: "dlgServiceError", kind: "ModalDialog", caption: "Unknown Service Error", components: [{
-			content: "Configuration could not be loaded since the service returned an error!", className: "enyo-text-error"
-		}, {
-			kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"
-		}]
-	}, {
-		kind: "wi.Header", random: [{weight: 100, tagline: "Tweak the hell out of webOS!"}]
-	}, {
-		name: "empty", layoutKind: "HFlexLayout", flex: 1, align: "center", pack: "center", components: [{ 
-			name: "spinner", kind: "SpinnerLarge"
-		}]
-	}, {
-		name: "categories", kind: "VirtualRepeater", onSetupRow: "setupCategory", components: [{
-			kind: "Item", layoutKind: "HFlexLayout", flex: 1, align: "center", tapHighlight: true, 
-				onclick: "handleCategory", components: 
-			[{
-				name: "icon", kind: "Image", src: "images/icon-generic.png", style: "margin: -10px 18px -8px 5px;"
-			}, {
-				name: "category", flex: 1, style: "text-transform: capitalize; margin-top: -1px;"
-			}, {
-				name: "count", className: "enyo-label", style: "padding-right: 20px;"
-			}]
-		}]
-	}],
+			method: "scan", onSuccess: "handleTweaks", onFailure: "serviceError"},
+		
+		{name: "dlgServiceError", kind: "ModalDialog", caption: "Unknown Service Error", components: [
+			{content: "Configuration could not be loaded since the service returned an error!", className: "enyo-text-error"},
+			{kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"}
+		]}, 
+		
+		{kind: "wi.Header", random: [{weight: 100, tagline: "Tweak the hell out of webOS!"}]}, 
+		
+		{name: "empty", layoutKind: "HFlexLayout", flex: 1, align: "center", pack: "center", components: [
+			{name: "spinner", kind: "SpinnerLarge"}
+		]}, 
+	
+		{name: "mainScroller", kind: "Scroller", height: "613px", components: [
+			{name: "categories", kind: "VirtualRepeater", onSetupRow: "setupCategory", components: [
+				{kind: "Item", layoutKind: "HFlexLayout", flex: 1, align: "center", tapHighlight: true, 
+					onclick: "handleCategory", components: [
+						{name: "icon", kind: "Image", src: "images/icon-generic.png", style: "margin: -10px 18px -8px 5px;"}, 
+						{name: "category", flex: 1, style: "text-transform: capitalize; margin-top: -1px;"},
+						{name: "count", className: "enyo-label", style: "padding-right: 20px;"}
+				]}
+			]}
+		]}
+	],
 	
 	rendered: function() {
 		this.inherited(arguments);
@@ -54,8 +52,16 @@ enyo.kind({
 		this.$.empty.show();
 
 		this.$.spinner.show();
+
+		this.$.mainScroller.hide();
 		
 		this.loadPreferences();
+	},
+
+	adjustScroller: function() {
+		var s = enyo.fetchControlSize(this);
+
+		this.$.mainScroller.applyStyle("height", (s.h - 87) + "px");
 	},
 	
 	loadPreferences: function() {
@@ -73,8 +79,10 @@ enyo.kind({
 
 	handlePrefs: function(inSender, inResponse) {
 		this.$.empty.hide();
-
+	
 		this.$.spinner.hide();
+
+		this.$.mainScroller.show();
 	
 		this.owner._config = inResponse.results[0];
 	
@@ -180,6 +188,8 @@ enyo.kind({
 		this.$.empty.hide();
 
 		this.$.spinner.hide();
+
+		this.$.mainScroller.show();
 
 		this.$.dlgServiceError.openAtCenter();	
 	}	

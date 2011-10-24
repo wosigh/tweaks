@@ -17,13 +17,6 @@
 					enjo.MOJO_AVAILABLE = true;
 
 					var deviceInfo = JSON.parse(PalmSystem.deviceInfo);
-
-					if(deviceInfo) {
-						var majorVersion = deviceInfo["platformVersionMajor"];
-
-						if(majorVersion < 3)
-							enjo.ENYO_AVAILABLE = false;
-					}
 				}
 			}
 			

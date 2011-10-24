@@ -47,7 +47,7 @@ ScanCommandAssistant.prototype.run = function(future) {
 				var fileId = files[fileIdx].slice(0, files[fileIdx].length - 5);
 
 				var fileData = fs.readFileSync('/media/cryptofs/apps/usr/palm/services/org.webosinternals.tweaks.prefs/preferences/' + files[fileIdx], 'utf8');
-			
+
 				try { var jsonData = JSON.parse(fileData); } catch(error) { continue; }	
 
 				if(jsonData instanceof Array) {

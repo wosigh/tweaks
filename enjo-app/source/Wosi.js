@@ -124,10 +124,10 @@ enyo.kind({
 	],
 	
 	rendered: function() {
-		this._title		= this.title || "";
-		this._items		= this.items || [];
+		this._title	= this.title || "";
+		this._items	= this.items || [];
 		
-		this._multiSelect		= this.multiSelect || false;
+		this._multiSelect = this.multiSelect || false;
 
 		this.$.pickerTitle.setContent(this._title);
 	},
@@ -142,6 +142,10 @@ enyo.kind({
 		this._items = inItems;
 		
 		this.$.pickerFiles.refresh();
+	},
+	
+	setMultiSelect: function(inMultiSelect) {
+		this._multiSelect = inMultiSelect;
 	},
 	
 	openPicker: function() {

@@ -7,6 +7,8 @@ enyo.kind({
 	_help: {},
 	_category: null,
 
+	_pickerItem: null,
+
 	_matchNumeric: /^[0-9]*$/,
 	_matchFreeText: /^[-_a-zA-Z0-9 /.:@%~,'{}]*$/,
 	
@@ -15,43 +17,47 @@ enyo.kind({
 		onSelect: ""
 	},
 	
-	components: [{
-		name: "srvSetPrefs", kind: "DbService", 
-			dbKind: "org.webosinternals.tweaks:1", method: "merge", onSuccess: "handlePrefs", onFailure: "serviceError"
-	}, {
-		name: "dlgServiceError", kind: "ModalDialog", caption: "Unknown Service Error", components: [{
-			content: "Configuration could not be saved since the service returned an error!", className: "enyo-text-error"
-		}, {
-			kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"
-		}]
-	}, {
-		name: "dlgNumericError", kind: "ModalDialog", caption: "Unallowed Characters Used", components: [{
-			content: "The value you inputted for the numeric text field contains unallowed characters. Allowed characters are: " +
-				"0-9", className: "enyo-text-error"
-		}, {
-			kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"
-		}]
-	}, {
-		name: "dlgFreeTextError", kind: "ModalDialog", caption: "Unallowed Characters Used", components: [{
-			content: "The value you inputted for the free text field contains unallowed characters. Allowed characters are: " +
-				"a-z A-Z 0-9 -_/.:@%~,\'{}", className: "enyo-text-error"
-		}, {
-			kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"
-		}]
-	}, {	 
-		name: 'tag', style: "position: absolute; z-index: 3; background: url(images/sliding-tag.png) right center no-repeat;" +
-			"height: 50px; width: 26px; left: -26px; margin-top: -2px;"
-	}, {
-		kind: "PageHeader", layoutKind: "VFlexLayout", components: [{
-			name: "title", style: "text-transform: capitalize;", content: "Scanning Available Tweaks..."
-		}]
-	}, {
-		name: "empty", layoutKind: "VFlexLayout", flex: 1, pack: "center", align: "center", components: [{
-			content: "You should install some patches that have tweaks support."
-		}]
-	}, {
-		name: "groups", layoutKind: "HFlexLayout", style: "padding-top: 10px;", width: "100%", components: []
-	}],
+	components: [
+		{name: "srvSetPrefs", kind: "DbService", 
+			dbKind: "org.webosinternals.tweaks:1", method: "merge", onSuccess: "handlePrefs", onFailure: "serviceError"}, 
+		
+		{name: "srvGetFiles", kind: "PalmService", 
+			service: "palm://org.webosinternals.tweaks.prefs/", method: "list", onSuccess: "handleGetFiles"}, 
+
+		{name: "dlgServiceError", kind: "ModalDialog", caption: "Unknown Service Error", components: [
+			{content: "Configuration could not be saved since the service returned an error!", className: "enyo-text-error"}, 
+			{kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"}
+		]}, 
+	
+		{name: "dlgNumericError", kind: "ModalDialog", caption: "Unallowed Characters Used", components: [
+			{content: "The value you inputted for the numeric text field contains unallowed characters. Allowed characters are: " +
+				"0-9", className: "enyo-text-error"}, 
+			{kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"}
+		]}, 
+	
+		{name: "dlgFreeTextError", kind: "ModalDialog", caption: "Unallowed Characters Used", components: [
+			{content: "The value you inputted for the free text field contains unallowed characters. Allowed characters are: " +
+				"a-z A-Z 0-9 -_/.:@%~,\'{}", className: "enyo-text-error"}, 
+			{kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"}
+		]}, 
+	
+		{name: "filePicker", kind: "wi.Picker", multiSelect: true, onSelect: "handlePickerConfirm"},
+	
+		{name: 'tag', style: "position: absolute; z-index: 3; background: url(images/sliding-tag.png) right center no-repeat;" +
+			"height: 50px; width: 26px; left: -26px; margin-top: -2px;"}, 
+		
+		{kind: "PageHeader", layoutKind: "VFlexLayout", components: [
+			{name: "title", style: "text-transform: capitalize;", content: "Scanning Available Tweaks..."}
+		]}, 
+	
+		{name: "empty", layoutKind: "VFlexLayout", flex: 1, pack: "center", align: "center", components: [
+			{content: "You should install some patches that have tweaks support."}
+		]},
+		
+		{name: "configScroller", kind: "Scroller", pack: "center", flex: 1, height: "613px;", components: [
+			{name: "groups", layoutKind: "HFlexLayout", style: "padding-top: 10px;", width: "100%", components: []}
+		]}
+	],
 	
 	rendered: function() {
 		this.inherited(arguments);
@@ -59,6 +65,12 @@ enyo.kind({
 		this.$.tag.hide();
 
 		this.$.empty.hide();
+	},
+	
+	adjustScroller: function() {
+		var s = enyo.fetchControlSize(this);
+
+		this.$.configScroller.applyStyle("height", (s.h - 87) + "px");
 	},
 	
 	updateGroups: function(inMarker, inCategory, inGroups) {
@@ -71,21 +83,27 @@ enyo.kind({
 		}
 	
 		this._category = inCategory;
-		
-		this.$.tag.applyStyle('top', inMarker + 'px');
 
-		this.$.tag.show();
-		
+		if(enyo.fetchDeviceInfo().modelNameAscii == "TouchPad") {
+			this.$.tag.applyStyle('top', inMarker + 'px');
+
+			this.$.tag.show();
+		}
+				
 		this.$.title.setContent("Available " + inCategory + " Tweaks");
 
-		if(this.$.groupsList)
-			this.$.groupsList.destroy();
+		this.$.configScroller.scrollIntoView(0);
 
-		this.$.groups.createComponent({
-			name: "groupsList", kind: "Scroller", autoHorizontal: false, horizontal: false, width: "100%", style: "height:800px;", components: [{
-				name: "groupItems", layoutKind: "VFlexLayout", style: "padding: 0px 20px 0px 20px;", components: []
-			}]
-		}, {owner: this});
+		if(this.$.groupItems)
+			this.$.groupItems.destroy();
+
+		if(enyo.fetchDeviceInfo().modelNameAscii == "TouchPad") {
+			this.$.groups.createComponent({name: "groupItems", layoutKind: "VFlexLayout", flex: 1, style: "padding: 0px 20px 0px 20px;", components: []}, 
+				{owner: this});
+		} else {
+			this.$.groups.createComponent({name: "groupItems", layoutKind: "VFlexLayout", flex: 1, style: "padding: 0px 5px 0px 5px;", components: []}, 
+				{owner: this});
+		}
 		
 		for(var group in inGroups) {
 			if(inGroups[group].length > 0) {
@@ -135,11 +153,15 @@ enyo.kind({
 					}
 					else if(inGroups[group][i].type == "FilePicker") {
 						help.push({label: inGroups[group][i].label, help: inGroups[group][i].help});
-/*
+
+						var files = inGroups[group][i].value.toString();
+						
+						if(files.length > 13)
+							files = files.slice(0, 10) + "...";
+
 						items.push({kind: "Item", layoutKind: "HFlexLayout", align: "center", pack: "center", components: [
 							{content: inGroups[group][i].label, flex: 1, className: "enyo-label"},
-							{name: inGroups[group][i].key, kind: "ToggleButton", onLabel: "Yes", offLabel: "No", state: inGroups[group][i].value, onChange: "handleToggle"}]});
-*/
+							{name: inGroups[group][i].key, onclick: "openFilePicker", content: files, className: "enyo-title"}]});
 					}
 				}
 
@@ -156,6 +178,42 @@ enyo.kind({
 		this.doSelect(inSender.name, this._help[inSender.name]);
 	},
 
+	openFilePicker: function(inSender) {
+		for(var group in this.owner._config[this._category]) {
+			for(var i = 0; i < this.owner._config[this._category][group].length; i++) {
+				if(this.owner._config[this._category][group][i].key == inSender.name) {
+					var multiSelect = false;
+					
+					if(this.owner._config[this._category][group][i].select == "multi")
+						multiSelect = "single";
+					
+					this.$.filePicker.setMultiSelect(multiSelect);
+					
+					this._pickerItem = this.owner._config[this._category][group][i];
+					
+					this.$.srvGetFiles.call({
+						filter: this.owner._config[this._category][group][i].filter,
+						path: this.owner._config[this._category][group][i].path});
+					
+					break;
+				}
+			}
+		}
+	},
+
+	handleGetFiles: function(inSender, inResponse) {
+		for(var i = 0; i < inResponse.files.length; i++) {
+			if(this._pickerItem.value.indexOf(inResponse.files[i].value) != -1)
+				inResponse.files[i].selected = true;
+		}
+
+		this.$.filePicker.setTitle(this._pickerItem.label);
+	
+		this.$.filePicker.setItems(inResponse.files);
+
+		this.$.filePicker.openPicker();
+	},
+
 	handlePicker: function(inSender) {
 		for(var group in this.owner._config[this._category]) {
 			for(var i = 0; i < this.owner._config[this._category][group].length; i++) {
@@ -170,6 +228,21 @@ enyo.kind({
 					break;
 				}
 			}
+		}
+	},
+
+	handlePickerConfirm: function(inSender, inFiles) {
+		if(inFiles.length > 0) {
+			this._pickerItem.value = inFiles;
+
+			var files = inFiles.toString();
+		
+			if(files.length > 13)
+				files = files.slice(0, 10) + "...";
+		
+			this.$[this._pickerItem.key].setContent(files);
+		
+			this.saveConfig();
 		}
 	},
 

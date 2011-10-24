@@ -11,7 +11,7 @@
 			{ 
 				"name": "list", 
 				"assistant": "ListCommandAssistant",
-				"public": false
+				"public": true
 			},
 			{ 
 				"name": "scan", 
