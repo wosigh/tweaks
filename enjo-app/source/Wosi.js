@@ -3,20 +3,20 @@ enyo.kind({
 	kind: enyo.Control,
 	
 	published: {
-		type:		'',
-		icon:		'',
-		title:		'',
-		version:	'',
-		tagline:	'Random Taglines Are Awesome',
-		date:		[],
-		random:		[]
+		type: '',
+		icon: '',
+		title: '',
+		version: '',
+		tagline: 'Random Taglines Are Awesome',
+		date: [],
+		random: []
 	},
 	
-	_selected:	false,
-	_icon:		'',
-	_title:		'',
-	_version:	'',
-	_tagline:	'',
+	_selected: false,
+	_icon: '',
+	_title: '',
+	_version: '',
+	_tagline: '',
 	
 	components: [
 		{kind: 'PageHeader', components: [
@@ -34,56 +34,80 @@ enyo.kind({
 	],
 	
 	rendered: function() {
-		if (!this._selected) {
-			var d			= this.getDate()
-			var r			= this.getRandom();
-			this._icon		= d.icon    || r.icon    || this.icon    || enyo.fetchAppInfo().icon;
-			this._title		= d.title   || r.title   || this.title   || enyo.fetchAppInfo().title;
-			this._version	= d.version || r.version || 'v' + (this.version || enyo.fetchAppInfo().version);
-			this._tagline	= d.tagline || r.tagline || this.tagline || '&nbsp;';
+		if(!this._selected) {
+			var d	= this.getDate()
+			var r	= this.getRandom();
+			
+			this._icon = d.icon || r.icon || this.icon || enyo.fetchAppInfo().icon;
+			this._title = d.title || r.title || this.title || enyo.fetchAppInfo().title;
+			this._version = d.version || r.version || 'v' + (this.version || enyo.fetchAppInfo().version);
+			this._tagline = d.tagline || r.tagline || this.tagline || '&nbsp;';
 			this._selected	= true;
 		}
-		if (this.type) this.$.header.addClass(this.type);
+		
+		if(this.type)
+			this.$.header.addClass(this.type);
+		
 		this.$.icon.setSrc(this._icon);
 		this.$.title.setContent(this._title);
 		this.$.version.setContent(this._version);
 		this.$.tagline.setContent(this._tagline);
 	},
 	
+	setTagLine: function(tagLine) {
+		this.$.tagline.setContent(tagLine);
+	},
+	
 	getDate: function() {
-		if (this.date.length == 0) return false;
-		var date  = new Date();
-		var day   = date.getDate();
+		if(this.date.length == 0)
+			return false;
+			
+		var date = new Date();
+		var day = date.getDate();
 		var month = date.getMonth() + 1;
-		var year  = date.getFullYear();
-		for (var d = 0; d < this.date.length; d++) {
-			if ((this.date[d].day   && this.date[d].day   == day)   &&
+		var year = date.getFullYear();
+		
+		for(var d = 0; d < this.date.length; d++) {
+			if((this.date[d].day   && this.date[d].day   == day) &&
 				(this.date[d].month && this.date[d].month == month) &&
 				(this.date[d].year  && this.date[d].year  == year))
+			{
 				return this.date[d];
+			}
 		}
-		for (var d = 0; d < this.date.length; d++) {
-			if ((this.date[d].day   && this.date[d].day   == day)   &&
+		
+		for(var d = 0; d < this.date.length; d++) {
+			if((this.date[d].day   && this.date[d].day   == day) &&
 				(this.date[d].month && this.date[d].month == month) &&
 				(!this.date[d].year))
+			{
 				return this.date[d];
+			}
 		}
+		
 		return false;
 	},
+	
 	getRandom: function() {
 		var w = 0;
-		if (this.random.length == 0) return false;
-		for (var r = 0; r < this.random.length; r++) {
+		
+		if(this.random.length == 0)
+			return false;
+		
+		for(var r = 0; r < this.random.length; r++) {
 			if (!this.random[r].weight) this.random[r].weight = 1;
 			w += this.random[r].weight;
 		}
+		
 		var ran = Math.floor(Math.random() * w) + 1;
-		for (var r = 0; r < this.random.length; r++) {
-			if (ran <= this.random[r].weight)
+		
+		for(var r = 0; r < this.random.length; r++) {
+			if(ran <= this.random[r].weight)
 				return this.random[r];
 			else
 				ran -= this.random[r].weight;
 		}
+		
 		return this.random[0];
 	}	
 });
@@ -97,14 +121,14 @@ enyo.kind({
 	},
 	
 	published: {
-		title:		'',
-		items:		[],
+		title: '',
+		items: [],
 	
-		multiSelect:	false
+		multiSelect: false
 	},
 	
-	_title:		'',
-	_items:	[],
+	_title: '',
+	_items: [],
 	
 	_multiSelect: false,
 	
@@ -153,7 +177,7 @@ enyo.kind({
 	},
 	
 	setupPickerRow: function(inSender, inIndex) {
-		if(inIndex < this._items.length) {
+		if((inIndex >= 0) && (inIndex < this._items.length)) {
 			if(this._items[inIndex].selected)
 				this.$.pickerItem.addClass("selected");
 			else

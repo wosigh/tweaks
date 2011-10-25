@@ -2,82 +2,83 @@ enyo.kind({
 	name: "Tweaks",
 	kind: enyo.VFlexBox,
 	
+	_ui: "full",
+	
+	_size: null,
+	
 	_config: null,
 
 	_defaults: {
 		version: "0.0.0"
 	},
 	
-	_currentView: "main",
-		
 	components: [
 		{kind: "ApplicationEvents", onBack: "handleBackEvent"},	
 	
 		{kind: "AppMenu", components: [
-			{caption: "Restart Luna", onclick: "restartLuna"}
+			{caption: "Restart Luna", onclick: "handleLunaRestart"}
 		]},
-	
-		{name: "srvRestartLuna", kind: "PalmService", 
-			service: "palm://org.webosinternals.ipkgservice", method: "restartLuna"}, 
-		
-		{name: "ctrDialog", kind: "DialogPrompt", title: "Luna Restart", 
-			acceptButtonCaption: "Yes", cancelButtonCaption: "No", onAccept: "handleAccept", 
-				message: "You have made changes that require restarting of Luna which will " +
-					"close all your open applications. Do you want to restart Luna now?"}, 
-		
-		{kind: "SlidingPane", flex: 1, style: "background: #666666;", components: [
+
+		{name: "dlgServiceError", kind: "ModalDialog", caption: "Unknown Service Error", components: [
+			{content: "Configuration could not be loaded since the service returned an error!", className: "enyo-text-error"},
+			{kind: "Button", caption: "OK", onclick: "handleConfirmError", style: "margin-top: 10px;"}
+		]}, 
+
+		{name: "appPane", kind: "SlidingPane", flex: 1, style: "background: #666666;", components: [
 			{name: "left", width: "320px", components: [
-				{name: "pane", kind: "Pane", flex: 1, components: [
-					{kind: "Main", className: "enyo-bg", onParsed: "handleInfo", onSelect: "handleCategory"}, 
-					{name: "clsStartup", kind: "Startup", className: "enyo-bg", onDone: "handleStartupDone"}
+				{name: "leftPane", kind: "Pane", flex: 1, components: [
+					{layoutKind: "VFlexLayout", flex: 1, pack: "top", components: [
+						{kind: "wi.Header", random: [{weight: 100, tagline: "Tweak the hell out of webOS!"}]}, 
+						
+						{layoutKind: "VFlexLayout", flex: 1, align: "center", pack: "center", components: [
+							{name: "leftSpinner", kind: "SpinnerLarge"},
+							{name: "leftProgress", content: "", style: "margin: 0px 0px 10px 0px; font-size: 0.7em; color: #666666;"}
+						]}
+					]}, 
+					{name: "clsMain", kind: "Main", className: "enyo-bg", onSelect: "handleCategorySelect"}, 
+					{name: "clsStartup", kind: "Startup", className: "enyo-bg", onDone: "startupDone"}
 				]}
 			]}, 
 			{name: "middle", fixedWidth: true, peekWidth: 64, width: "704px", dragAnywhere: false, className: "blank-slider", components: [
-				{name: "empty", layoutKind: "VFlexLayout", flex: 1, align: "center", pack: "center", style: "background: #666666;", components: [
-					{kind: "Image", src: "images/empty-icon.png"}, 
-					{name: "tweaks", content: "Scanning available tweaks...", style: "margin-top: -20px; font-size: 0.7em; color: #999999;"}
-				]}, 
-				{name: "content", layoutKind: "VFlexLayout", flex: 1, components: [
-					{name: "clsConfig", kind: "Config", className: "enyo-bg", onSelect: "handleGroup", onChange: "handleSettings"}, 
-					{kind: "Toolbar", pack: "center", className: "enyo-toolbar-light", components: [
-						{style: "width: 60px;"}, 
-						{kind: "Spacer", flex: 1}, 
-						{name: "restart", kind: "Button", caption: "Luna restart required (click here to restart)", onclick: "handleRestart"}, 
-						{kind: "Spacer", flex: 1}, 
-						{kind: "Button", caption: "Help", toggling: true, slidingHandler: true, style: "margin-right: 8px;"}
-					]}
+				{name: "middlePane", kind: "Pane", flex: 1, components: [
+					{layoutKind: "VFlexLayout", flex: 1, align: "center", pack: "center", style: "background: #666666;", components: [
+						{name: "middleImage", kind: "Image", src: "images/empty-icon.png"}, 
+						{name: "middleSpinner", kind: "SpinnerLarge"},
+						{name: "middleProgress", content: "", style: "margin-top: -20px; font-size: 0.7em; color: #999999;"}
+					]},
+					{name: "clsConfig", kind: "Config", className: "enyo-bg", onSelect: "handleGroupSelect"}
 				]}
 			]}, 
 			{name: "right", fixedWidth: true, peekWidth: 768, width: "256px", dragAnywhere: false, className: "blank-slider", components: [
 				{name: "clsHelp", kind: "Help", className: "enyo-bg"}
 			]}
-		]}
+		]},
+
+		{name: "srvLoadTweaks", kind: "DbService", dbKind: "org.webosinternals.tweaks:1", method: "find", 
+			onSuccess: "handleLoadFinished", onFailure: "handleServiceError"}, 
+
+		{name: "srvScanTweaks", kind: "PalmService", service: "palm://org.webosinternals.tweaks.prefs/", method: "scan", 
+			onSuccess: "handleScanFinished", onFailure: "handleServiceError"}
 	],
 	
 	rendered: function() {
 		this.inherited(arguments);
 
-		if(enyo.fetchDeviceInfo().modelNameAscii != "TouchPad") {
-			enyo.setAllowedOrientation("up");
-			this.$.middle.applyStyle("width", "320px");
-		}
-		
-		this.$.content.hide();
-		this.$.empty.show();
+		this.adjustInterface();
 
-		this.$.restart.hide();
-				
 		if((localStorage) && (localStorage["prefs"])) {
 			prefs = enyo.mixin(this._defaults, enyo.json.parse(localStorage["prefs"]));
 
 			if(prefs.version != enyo.fetchAppInfo().version) {
-				this.$.clsStartup.hideWelcome();
+				this.$.clsStartup.hideWelcomeText();
 
-				this.$.pane.selectViewByIndex(1);
+				this.$.leftPane.selectViewByIndex(2);
+			} else {
+				this.startupDone();
 			}
 		}
 		else {
-			this.$.pane.selectViewByIndex(1);
+			this.$.leftPane.selectViewByIndex(2);
 
 			prefs = this._defaults;
 		}
@@ -85,97 +86,147 @@ enyo.kind({
 		prefs.version = enyo.fetchAppInfo().version;
 
 		localStorage["prefs"] = enyo.json.stringify(prefs);
-
-		this.adjustSliding();
 	},
 
 	resizeHandler: function() {
-		this.adjustSliding();
-
-		this.$.clsStartup.adjustScroller();
-		
-		this.$.clsMain.adjustScroller();
-		this.$.clsConfig.adjustScroller();
+		this.adjustInterface();
 	},
 
-	adjustSliding: function() {
-		var s = enyo.fetchControlSize(this);
+	adjustInterface: function() {
+		this._size = enyo.fetchControlSize(this);
 
-		if(enyo.fetchDeviceInfo().modelNameAscii == "TouchPad") {
-			this.$.middle.applyStyle("width", (s.w - 320) + "px");
-			this.$.right.setPeekWidth(s.w - 320 + 64);
+		if(this._size.w < 640) {
+			this._ui = "compact";
+		
+			enyo.setAllowedOrientation("up");
 		} else {
-			this.$.middle.applyStyle("width", "320px");
-			this.$.right.applyStyle("width", "240px");
-
-			this.$.middle.setPeekWidth(-240);
-			this.$.right.setPeekWidth(s.w - 240);
+			this.$.middle.applyStyle("width", (this._size.w - 320) + "px");
+			
+			this.$.right.setPeekWidth(this._size.w - 320 + 64);
 		}
+
+		this.$.clsMain.adjustInterface(this._size);
+		this.$.clsConfig.adjustInterface(this._size);
+		this.$.clsStartup.adjustInterface(this._size);
 	},
 
-	handleStartupDone: function() {
-		this.$.pane.selectViewByIndex(0);
+	startupDone: function() {
+		this.$.leftProgress.setContent("Scanning installed tweaks...");		
+		this.$.middleProgress.setContent("Scanning installed tweaks...");		
+
+		this.showSpinner();
+
+		this.$.srvScanTweaks.call({});
 	},
 
-	handleBackEvent: function(inSender, inEvent) {
-		if(enyo.fetchDeviceInfo().modelNameAscii != "TouchPad") {
-			if(this._currentView == "groups") {
-				enyo.stopEvent(inEvent);
-		
-				this._currentView = "main";
-		
-				this.$.left.applyStyle("width", "320px");
-				this.$.left.applyStyle("z-index", "100");
-			}
+	showSpinner: function() {
+		if(this._ui == "compact") {
+			this.$.leftSpinner.show();
+
+			this.$.leftPane.selectViewByIndex(0);
+		} else {
+			this.$.leftPane.selectViewByIndex(1);
 		}
+
+		this.$.middleImage.hide();
+
+		this.$.middleSpinner.show();
+
+		this.$.middlePane.selectViewByIndex(0);
 	},
 
-	handleInfo: function(inSender, inNewTotal, inOldTotal) {
-		if(inNewTotal == 0)
-			this.$.tweaks.setContent("There are no tweaks available");
-		else if((inNewTotal - inOldTotal) < 0)
-			this.$.tweaks.setContent("There was " + (inOldTotal - inNewTotal) + " tweak(s) removed");		
-		else if((inNewTotal - inOldTotal) > 0)
-			this.$.tweaks.setContent("There are " + (inNewTotal - inOldTotal) + " new tweak(s) available");
-		else 
-			this.$.tweaks.setContent("There are " + inNewTotal + " tweak(s) available");
+	hideSpinner: function() {
+		if(this._ui == "compact") {
+			this.$.leftSpinner.hide();
+
+			this.$.leftPane.selectViewByIndex(1);
+		}
+
+		this.$.middleImage.show();
+
+		this.$.middleSpinner.hide();
 	},	
 
-	handleCategory: function(inSender, inMarker, inCategory, inGroups) {
-		if(enyo.fetchDeviceInfo().modelNameAscii != "TouchPad") {
-			this._currentView = "groups";
-
-			this.$.left.applyStyle("width", "0px");
-			this.$.left.applyStyle("z-index", "0");
-		}
+	handleBackEvent: function(inSender, inEvent) {
+		if((this._ui == "compact") && (this.$.appPane.getViewIndex() > 0)) {
+			enyo.stopEvent(inEvent);
 		
-		this.$.empty.hide();
-		this.$.content.show();
+			this.$.appPane.back();
+		}
+	},
+
+	handleLunaRestart: function(inSender, inEvent) {
+		this.$.clsConfig.handleLunaRestart();
+	},
+
+	handleConfirmError: function(inSender, inEvent) {
+		this.$.dlgServiceError.close();
+	},
+
+	handleServiceError: function(inSender, inResponse) {
+		this.$.dlgServiceError.openAtCenter();	
+	},
+
+	handleScanFinished: function(inSender, inResponse) {
+		this.$.srvLoadTweaks.call({});
+	},
+	
+	handleLoadFinished: function(inSender, inResponse) {
+		var oldTotal = 0;
+		var newTotal = 0;
+
+		this.hideSpinner();
+		
+		if((inResponse) && (inResponse.results) && (inResponse.results.length > 0)) {
+			var newTotal = this.$.clsMain.updateTweaks(inResponse.results[0]);
+
+			if((localStorage) && (localStorage["data"]))
+				var oldTotal = enyo.json.parse(localStorage["data"]).total;
+
+			if(newTotal == 0)
+				this.$.middleProgress.setContent("There are no tweaks available");
+			else if((newTotal - oldTotal) < 0)
+				this.$.middleProgress.setContent("There was " + (oldTotal - newTotal) + " tweak(s) removed");		
+			else if((newTotal - oldTotal) > 0)
+				this.$.middleProgress.setContent("There are " + (newTotal - oldTotal) + " new tweak(s) available");
+			else 
+				this.$.middleProgress.setContent("There are " + newTotal + " tweak(s) available");
+
+			if(this._ui == "compact") {
+				if((newTotal - oldTotal) < 0)
+					enyo.windows.addBannerMessage("There was " + (oldTotal - newTotal) + " tweak(s) removed...", "{}");		
+				else if((newTotal - oldTotal) > 0)
+					enyo.windows.addBannerMessage("There is " + (newTotal - oldTotal) + " new tweak(s) available...", "{}"); 
+			}
+		
+			localStorage["data"] = enyo.json.stringify({total: newTotal});
+		} else {
+			this.$.middleProgress.setContent("There are no tweaks available");
+		}
+	},
+
+	handleCategorySelect: function(inSender, inMarker, inCategory, inGroups) {
+		if(this._ui == "compact")
+			this.$.appPane.selectViewByIndex(1);
 		
 		this.$.middle.removeClass("blank-slider");
 
 		this.$.clsHelp.updateHelp();
 		
 		this.$.clsConfig.updateGroups(inMarker, inCategory, inGroups);
-	},
-	
-	handleGroup: function(inSender, inGroup, inHelp) {
-		this.$.clsHelp.updateHelp(inGroup, inHelp);
+
+		this.$.middlePane.selectViewByIndex(1);
 	},
 
-	handleSettings: function(inSender) {
-		if(enyo.fetchDeviceInfo().modelNameAscii != "TouchPad")
-			this.$.ctrDialog.open();		
-		else
-			this.$.restart.show();	
-	},
-	
-	handleRestart: function() {
-		this.$.ctrDialog.open();
-	},
-	
-	handleAccept: function() {
-		this.$.srvRestartLuna.call();
-	}
+	handleGroupSelect: function(inSender, inGroup, inHelp) {
+		if((this._ui == "compact") || (!inGroup)) {
+			if(this.$.appPane.getViewIndex() == 2)
+				this.$.appPane.selectViewByIndex(0);
+			else
+				this.$.appPane.selectViewByIndex(2);
+		}
+		
+		this.$.clsHelp.updateHelp(inGroup, inHelp);
+	}	
 });
 

@@ -179,7 +179,7 @@ ScanCommandAssistant.prototype.run = function(future) {
 		future.nest(prefs.save(newConfig));
 
 		future.then(this, function(future) {
-			future.result = { returnValue: true };
+			future.result = { returnValue: true};
 		});
 	});
 }

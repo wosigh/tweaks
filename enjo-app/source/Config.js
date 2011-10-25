@@ -4,6 +4,11 @@ enyo.kind({
 	className: "basic-back",
 	flex: 1,
 	
+	_ui: "full",
+	
+	_helpOn: false,
+	_lunaOn: false,
+	
 	_help: {},
 	_category: null,
 
@@ -13,78 +18,79 @@ enyo.kind({
 	_matchFreeText: /^[-_a-zA-Z0-9 /.:@%~,'{}]*$/,
 	
 	events: {
-		onChange: "",
 		onSelect: ""
 	},
 	
 	components: [
-		{name: "srvSetPrefs", kind: "DbService", 
-			dbKind: "org.webosinternals.tweaks:1", method: "merge", onSuccess: "handlePrefs", onFailure: "serviceError"}, 
-		
-		{name: "srvGetFiles", kind: "PalmService", 
-			service: "palm://org.webosinternals.tweaks.prefs/", method: "list", onSuccess: "handleGetFiles"}, 
+		{name: "dlgLunaRestart", kind: "DialogPrompt", title: "Luna Restart", 
+			acceptButtonCaption: "Yes", cancelButtonCaption: "No", onAccept: "handleConfirmRestart", 
+				message: "You have made changes that require restarting of Luna which will " +
+					"close all your open applications. Do you want to restart Luna now?"}, 
 
 		{name: "dlgServiceError", kind: "ModalDialog", caption: "Unknown Service Error", components: [
 			{content: "Configuration could not be saved since the service returned an error!", className: "enyo-text-error"}, 
-			{kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"}
+			{kind: "Button", caption: "OK", onclick: "handleDismissDialog", style: "margin-top: 10px;"}
 		]}, 
 	
 		{name: "dlgNumericError", kind: "ModalDialog", caption: "Unallowed Characters Used", components: [
 			{content: "The value you inputted for the numeric text field contains unallowed characters. Allowed characters are: " +
 				"0-9", className: "enyo-text-error"}, 
-			{kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"}
+			{kind: "Button", caption: "OK", onclick: "handleDismissDialog", style: "margin-top: 10px;"}
 		]}, 
 	
 		{name: "dlgFreeTextError", kind: "ModalDialog", caption: "Unallowed Characters Used", components: [
 			{content: "The value you inputted for the free text field contains unallowed characters. Allowed characters are: " +
 				"a-z A-Z 0-9 -_/.:@%~,\'{}", className: "enyo-text-error"}, 
-			{kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"}
+			{kind: "Button", caption: "OK", onclick: "handleDismissDialog", style: "margin-top: 10px;"}
 		]}, 
 	
 		{name: "filePicker", kind: "wi.Picker", multiSelect: true, onSelect: "handlePickerConfirm"},
 	
 		{name: 'tag', style: "position: absolute; z-index: 3; background: url(images/sliding-tag.png) right center no-repeat;" +
-			"height: 50px; width: 26px; left: -26px; margin-top: -2px;"}, 
+			"height: 50px; width: 26px; left: -26px; margin-top: -2px;display: none;"}, 
 		
 		{kind: "PageHeader", layoutKind: "VFlexLayout", components: [
-			{name: "title", style: "text-transform: capitalize;", content: "Scanning Available Tweaks..."}
+			{name: "title", style: "text-transform: capitalize;", content: "Tweak Groups"}
 		]}, 
 	
-		{name: "empty", layoutKind: "VFlexLayout", flex: 1, pack: "center", align: "center", components: [
-			{content: "You should install some patches that have tweaks support."}
-		]},
-		
 		{name: "configScroller", kind: "Scroller", pack: "center", flex: 1, height: "613px;", components: [
 			{name: "groups", layoutKind: "HFlexLayout", style: "padding-top: 10px;", width: "100%", components: []}
-		]}
+		]},
+
+		{kind: "Toolbar", pack: "center", className: "enyo-toolbar-light", components: [
+			{style: "width: 60px;"}, 
+			{kind: "Spacer", flex: 1}, 
+			{name: "restart", kind: "Button", caption: "Luna restart required (click here to restart)", style: "display: none;", onclick: "handleLunaRestart"}, 
+			{kind: "Spacer", flex: 1}, 
+			{kind: "ToolButton", icon: "images/help-toggle.png", toggling: true, style: "margin-right: 8px;", onclick: "handleHelpToggle"}
+		]},
+
+		{name: "srvGetFiles", kind: "PalmService", service: "palm://org.webosinternals.tweaks.prefs/", method: "list", 
+			onSuccess: "handleGetFiles"},
+
+		{name: "srvSaveTweaks", kind: "DbService", dbKind: "org.webosinternals.tweaks:1", method: "merge", 
+			onSuccess: "handleTweaksSaved", onFailure: "handleServiceError"},
+
+		{name: "srvRestartLuna", kind: "PalmService", service: "palm://org.webosinternals.ipkgservice", method: "restartLuna"}
 	],
 	
-	rendered: function() {
-		this.inherited(arguments);
-		
-		this.$.tag.hide();
+	adjustInterface: function(inSize) {
+		if(inSize.w < 640)
+			this._ui = "compact";
 
-		this.$.empty.hide();
-	},
-	
-	adjustScroller: function() {
-		var s = enyo.fetchControlSize(this);
-
-		this.$.configScroller.applyStyle("height", (s.h - 87) + "px");
+		this.$.configScroller.applyStyle("height", (inSize.h - 87) + "px");
 	},
 	
 	updateGroups: function(inMarker, inCategory, inGroups) {
 		if(inMarker == undefined) {
 			this.$.title.setContent("No Available Tweaks");
 
-			this.$.empty.show();
-				
 			return;
 		}
 	
 		this._category = inCategory;
 
-		if(enyo.fetchDeviceInfo().modelNameAscii == "TouchPad") {
+		if(this._ui == "full") {
 			this.$.tag.applyStyle('top', inMarker + 'px');
 
 			this.$.tag.show();
@@ -97,7 +103,7 @@ enyo.kind({
 		if(this.$.groupItems)
 			this.$.groupItems.destroy();
 
-		if(enyo.fetchDeviceInfo().modelNameAscii == "TouchPad") {
+		if(this._ui == "full") {
 			this.$.groups.createComponent({name: "groupItems", layoutKind: "VFlexLayout", flex: 1, style: "padding: 0px 20px 0px 20px;", components: []}, 
 				{owner: this});
 		} else {
@@ -167,15 +173,70 @@ enyo.kind({
 
 				this._help[group] = help;
 				
-				this.$.groupItems.createComponent({name: group, kind: "RowGroup", caption: group, components: items, onclick: "handleHelp"}, {owner: this});
+				this.$.groupItems.createComponent({name: group, kind: "RowGroup", caption: group, components: items, onclick: "handleHelpSelect"}, {owner: this});
 			}
 		}
 
 		this.$.groups.render();
 	},
+
+	saveTweaksConfig: function() {
+		this.$.srvSaveTweaks.call({objects: [this.owner._config]});
+	},
+
+	handleHelpToggle: function(inSender, inEvent) {
+		if(this._ui == "compact") {
+			if(this._helpOn) {
+				this._helpOn = false;
+			} else {
+				this._helpOn = true;
+				
+				this.doSelect();
+			}
+		} else {
+			this.doSelect();
+		}
+	},
 	
-	handleHelp: function(inSender, inEvent) {
-		this.doSelect(inSender.name, this._help[inSender.name]);
+	handleTweaksSaved: function(inSender, inResponse) {
+		this.owner._config._rev = inResponse.results[0].rev;
+	},
+
+	handleServiceError: function() {
+		this.$.dlgServiceError.openAtCenter();
+	},
+
+	handleLunaNotify: function(inSender, inEvent) {
+		if(this._ui == "compact") {
+			if(!this._lunaOn) {
+				this._lunaOn = true;
+
+				this.$.dlgLunaRestart.open();
+
+				this.$.restart.setCaption("Luna Restart");
+			}
+		}
+			
+		this.$.restart.applyStyle("display", "block");	
+	},
+	
+	handleLunaRestart: function(inSender, inEvent) {
+		this.$.dlgLunaRestart.open();
+	},
+
+	handleConfirmRestart: function(inSender, inEvent) {
+		this.$.srvRestartLuna.call();
+	},
+
+	handleDismissDialog: function(inSender, inEvent) {
+		this.$.dlgServiceError.close();
+		this.$.dlgNumericError.close();
+		this.$.dlgFreeTextError.close();
+	},
+	
+	handleHelpSelect: function(inSender, inEvent) {
+		if((this._ui == "full") || (this._helpOn == true))
+			this.doSelect(inSender.name, this._help[inSender.name]);
 	},
 
 	openFilePicker: function(inSender) {
@@ -221,9 +282,9 @@ enyo.kind({
 					this.owner._config[this._category][group][i].value = this.$[inSender.name].getValue();
 		
 					if(this.owner._config[this._category][group][i].restart == "luna")
-						this.doChange();
+						this.handleLunaNotify();
 					
-					this.saveConfig();
+					this.saveTweaksConfig();
 					
 					break;
 				}
@@ -242,7 +303,7 @@ enyo.kind({
 		
 			this.$[this._pickerItem.key].setContent(files);
 		
-			this.saveConfig();
+			this.saveTweaksConfig();
 		}
 	},
 
@@ -253,9 +314,9 @@ enyo.kind({
 					this.owner._config[this._category][group][i].value = this.$[inSender.name].getValue();
 		
 					if(this.owner._config[this._category][group][i].restart == "luna")
-						this.doChange();
+						this.handleLunaNotify();
 
-					this.saveConfig();
+					this.saveTweaksConfig();
 					
 					break;
 				}
@@ -297,9 +358,9 @@ enyo.kind({
 						this.owner._config[this._category][group][i].value = this.$[inSender.name].getValue();
 	
 						if(this.owner._config[this._category][group][i].restart == "luna")
-							this.doChange();
+							this.handleLunaNotify();
 
-						this.saveConfig();
+						this.saveTweaksConfig();
 					}
 										
 					break;
@@ -315,31 +376,13 @@ enyo.kind({
 					this.owner._config[this._category][group][i].value = this.$[inSender.name].getState();
 		
 					if(this.owner._config[this._category][group][i].restart == "luna")
-						this.doChange();
+						this.handleLunaNotify();
 
-					this.saveConfig();
+					this.saveTweaksConfig();
 					
 					break;
 				}
 			}
 		}
-	},
-	
-	handlePopup: function(inSender, inEvent) {
-		this.$.dlgServiceError.close();
-		this.$.dlgNumericError.close();
-		this.$.dlgFreeTextError.close();
-	},
-	
-	saveConfig: function() {
-		this.$.srvSetPrefs.call({objects: [this.owner._config]});
-	},
-	
-	handlePrefs: function(inSender, inResponse) {
-		this.owner._config._rev = inResponse.results[0].rev;
-	},
-	
-	serviceError: function() {
-		this.$.dlgServiceError.openAtCenter();
 	}
 });

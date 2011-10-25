@@ -1,112 +1,71 @@
 enyo.kind({
 	name: "Main",
 	kind: enyo.VFlexBox,
-	className: "basic-back",
 	flex: 1,
-	
-	_defaults: {total: 0},
+	className: "basic-back",
 	
 	_groups: [],
-	_categories: [],
+	
+	_categories: [
+		{category: "browser", count: 0},
+		{category: "calendar", count: 0},
+		{category: "camera", count: 0},
+		{category: "clock", count: 0},			
+		{category: "contacts", count: 0},
+		{category: "email", count: 0},
+		{category: "messaging", count: 0},
+		{category: "phone", count: 0},
+		{category: "system", count: 0}								
+	],
 	
 	events: {
-		onSelect: "",
-		onParsed: ""
+		onSelect: ""
 	},
 	
 	components: [
-		{name: "srvGetPrefs", kind: "DbService", 
-			dbKind: "org.webosinternals.tweaks:1",
-			method: "find", onSuccess: "handlePrefs", onFailure: "serviceError"}, 
-		
-		{name: "srvScanTweaks", kind: "PalmService", 
-			service: "palm://org.webosinternals.tweaks.prefs/",
-			method: "scan", onSuccess: "handleTweaks", onFailure: "serviceError"},
-		
-		{name: "dlgServiceError", kind: "ModalDialog", caption: "Unknown Service Error", components: [
-			{content: "Configuration could not be loaded since the service returned an error!", className: "enyo-text-error"},
-			{kind: "Button", caption: "OK", onclick: "handlePopup", style: "margin-top: 10px;"}
-		]}, 
-		
 		{kind: "wi.Header", random: [{weight: 100, tagline: "Tweak the hell out of webOS!"}]}, 
 		
-		{name: "empty", layoutKind: "HFlexLayout", flex: 1, align: "center", pack: "center", components: [
-			{name: "spinner", kind: "SpinnerLarge"}
-		]}, 
-	
-		{name: "mainScroller", kind: "Scroller", height: "613px", components: [
-			{name: "categories", kind: "VirtualRepeater", onSetupRow: "setupCategory", components: [
-				{kind: "Item", layoutKind: "HFlexLayout", flex: 1, align: "center", tapHighlight: true, 
-					onclick: "handleCategory", components: [
-						{name: "icon", kind: "Image", src: "images/icon-generic.png", style: "margin: -10px 18px -8px 5px;"}, 
-						{name: "category", flex: 1, style: "text-transform: capitalize; margin-top: -1px;"},
-						{name: "count", className: "enyo-label", style: "padding-right: 20px;"}
+		{name: "main", layoutKind: "VFlexLayout", flex: 1, components: [
+			{name: "scroller", kind: "Scroller", height: "613px", components: [
+				{name: "categories", kind: "VirtualRepeater", onSetupRow: "setupCategory", components: [
+					{kind: "Item", layoutKind: "HFlexLayout", flex: 1, align: "center", tapHighlight: true, 
+						onclick: "handleCategory", components: [
+							{name: "icon", kind: "Image", src: "images/icon-generic.png", style: "margin: -10px 18px -8px 5px;"}, 
+							{name: "category", flex: 1, style: "text-transform: capitalize; margin-top: -1px;"},
+							{name: "count", className: "enyo-label", style: "padding-right: 20px;"}
+					]}
 				]}
 			]}
 		]}
 	],
 	
-	rendered: function() {
-		this.inherited(arguments);
-
-		this.$.empty.show();
-
-		this.$.spinner.show();
-
-		this.$.mainScroller.hide();
-		
-		this.loadPreferences();
-	},
-
-	adjustScroller: function() {
-		var s = enyo.fetchControlSize(this);
-
-		this.$.mainScroller.applyStyle("height", (s.h - 87) + "px");
+	adjustInterface: function(inSize) {
+		this.$.scroller.applyStyle("height", (inSize.h - 87) + "px");
 	},
 	
-	loadPreferences: function() {
-		if((localStorage) && (localStorage["data"]))
-			data = enyo.mixin(this._defaults, enyo.json.parse(localStorage["data"]));
-		else
-			data = this._defaults;
-		
-		this.$.srvScanTweaks.call();		
-	},
-	
-	handleTweaks: function(inSender, inResponse) {
-		this.$.srvGetPrefs.call();
-	},
-
-	handlePrefs: function(inSender, inResponse) {
-		this.$.empty.hide();
-	
-		this.$.spinner.hide();
-
-		this.$.mainScroller.show();
-	
-		this.owner._config = inResponse.results[0];
+	updateTweaks: function(inTweaks) {
+		this.owner._config = inTweaks;
 	
 		this._groups = [];		
 		this._categories = [];
 		
-//		var selected = false;
 		var totalCount = 0;
 		
-		for(var category in inResponse.results[0]) {
+		for(var category in inTweaks) {
 			if(category.slice(0,1) == "_")
 				continue;
 
 			var count = 0;
 
-			if(inResponse.results[0][category] != undefined) {
-				for(var group in inResponse.results[0][category]) {
-					for(var j = 0; j < inResponse.results[0][category][group].length; j++) {
-						if((inResponse.results[0][category][group][j].deleted == undefined) && 
-						((inResponse.results[0][category][group][j].type == "TextField") ||
-						(inResponse.results[0][category][group][j].type == "ToggleButton") ||
-						(inResponse.results[0][category][group][j].type == "ListSelector") ||
-						(inResponse.results[0][category][group][j].type == "IntegerPicker") ||
-						(inResponse.results[0][category][group][j].type == "FilePicker")))
+			if(inTweaks[category] != undefined) {
+				for(var group in inTweaks[category]) {
+					for(var j = 0; j < inTweaks[category][group].length; j++) {
+						if((inTweaks[category][group][j].deleted == undefined) && 
+						((inTweaks[category][group][j].type == "TextField") ||
+						(inTweaks[category][group][j].type == "ToggleButton") ||
+						(inTweaks[category][group][j].type == "ListSelector") ||
+						(inTweaks[category][group][j].type == "IntegerPicker") ||
+						(inTweaks[category][group][j].type == "FilePicker")))
 						{
 							count++;
 							totalCount++;
@@ -115,34 +74,14 @@ enyo.kind({
 				}
 			}
 
-			this._groups.push(inResponse.results[0][category]);
+			this._groups.push(inTweaks[category]);
 			
 			this._categories.push({category: category, count: count});
-			
-/*			if((count > 0) && (!selected)) {
-				selected = true;
-				
-		      var list = this.$.categories.getOffset();				
-				
-				this.doSelect(list.top + ((this._categories.length - 1) * 45), this._categories[this._categories.length - 1].category, this._groups[this._groups.length - 1]);
-			} */
 		}
-
-/*		if(!selected)
-			this.doSelect(); */
 
 		this.$.categories.render();
 		
-/*		if((totalCount - data.total) < 0)
-			enyo.windows.addBannerMessage("There was " + (data.total - totalCount) + " tweak(s) removed...", "{}");		
-		else if((totalCount - data.total) > 0)
-			enyo.windows.addBannerMessage("There is " + (totalCount - data.total) + " new tweak(s) available...", "{}"); */
-
-		this.doParsed(totalCount, data.total);
-
-		data = {total: totalCount};
-
-		localStorage["data"] = enyo.json.stringify(data);
+		return totalCount;
 	},
 	
 	setupCategory: function(inSender, inIndex) {
@@ -178,19 +117,6 @@ enyo.kind({
 		
 			this.doSelect(list.top + (inEvent.rowIndex * 45), this._categories[inEvent.rowIndex].category, this._groups[inEvent.rowIndex]);
 		}
-	},
-
-	handlePopup: function(inSender, inEvent) {
-		this.$.dlgServiceError.close();
-	},
-	
-	serviceError: function(inSender, inResponse) {
-		this.$.empty.hide();
-
-		this.$.spinner.hide();
-
-		this.$.mainScroller.show();
-
-		this.$.dlgServiceError.openAtCenter();	
-	}	
+	}
 });
+

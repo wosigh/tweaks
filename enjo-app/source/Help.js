@@ -1,8 +1,8 @@
 enyo.kind({
 	name: "Help",
 	kind: enyo.VFlexBox,
-	className: "basic-back",
 	flex: 1,
+	className: "basic-back",
 		
 	components: [
 		{kind: "PageHeader", layoutKind: "VFlexLayout", components: [
@@ -44,3 +44,4 @@ enyo.kind({
 		}			
 	}
 });
+
